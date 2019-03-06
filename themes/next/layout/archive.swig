@@ -29,19 +29,31 @@
         {{ __('cheers.' + cheers) }}! {{ _p("counter.archive_posts", site.posts.length) }} {{ __('keep_on') }}
       </span>
 
-      {% for post in page.posts %}
+       {% for post in page.posts %}
 
-        {# Show year #}
-        {% set year %}
-        {% set post.year = date(post.date, 'YYYY') %}
+		 {# Show year #}
+		 {% set year %}
+		 {% set post.year = date(post.date, 'YYYY') %}
 
-        {% if post.year !== year %}
-          {% set year = post.year %}
-          <div class="collection-title">
-            <{% if theme.seo %}h2{% else %}h1{% endif %} class="archive-year" id="archive-year-{{ year }}">{{ year }}</{% if theme.seo %}h2{% else %}h1{% endif %}>
-          </div>
-        {% endif %}
-        {# endshow #}
+		 {% if post.year !== year %}
+		   {% set year = post.year %}
+		   <div class="collection-title">
+			 <h2 class="archive-year motion-element" id="archive-year-{{ year }}">{{ year }}</h2>
+		   </div>
+		 {% endif %}
+		 {# endshow #}
+
+		 {# Show month #}
+		 {% set month %}
+		 {% set post.month = date(post.date, 'MMM') %}
+
+		{% if post.month !== month %}
+		   {% set month = post.month %}
+		   <div class="collection-title">
+			 <h3 class="archive-year motion-element" id="archive-year-{{ year }}">{{ month }}</h3>
+		   </div>
+		{% endif %}
+		 {# endshow #}
 
         {{ post_template.render(post) }}
 

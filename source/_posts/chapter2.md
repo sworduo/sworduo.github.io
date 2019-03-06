@@ -1,19 +1,23 @@
 
 ---
 title: 分布式入门篇（二）
-date: 20190306
+date: 2019-03-06 16:09:21
 tags: 分布式
 categories: 分布式
+copyright: true
 ---
 
-#	[Up and down the level of abstraction](http://book.mixu.net/distsys/abstractions.html)
+{% asset_img head.jpg %}
+　　分布式编程主要是解决由于分布式而带来的一系列问题。我们希望把分布式系统看成是具有超大规模处理能力的单机系统，然而这种高层次的抽象会失去许多底层的细节，虽然便于理解，但是加大了编程的难度。所以分布式的抽象主要是在“实现”和“理解”之间取得一个平衡。抽象层次越高，理解起来越简单，实现起来越困难，事实上，这是一个贯穿于整个计算机系统各个子领域的权衡问题，没有通用的最优解，只有针对具体的合适的解决方法。我们的目标旨在寻找到一个足够好的抽象模型，尽可能让编程变得简单的同时容易让人可以理解。
+<!-- more -->
+<center><font size=6>[Up and down the level of abstraction](http://book.mixu.net/distsys/abstractions.html)<font></center>
+
 	author:Sworduo	date:Feb 26, Tue, 2019 
+	
 [参考1](https://cloud.tencent.com/developer/article/1193906):袖珍分布式系统（二）
 [参考2](https://www.ruanyifeng.com/blog/2018/07/cap.html):CAP定理的含义  
-![cute](https://raw.githubusercontent.com/sworduo/MIT6.824/master/brief%20introduction/pic/chapter2-head.jpg "cute")
 
-　　分布式编程主要是解决由于分布式而带来的一系列问题。我们希望把分布式系统看成是具有超大规模处理能力的单机系统，然而这种高层次的抽象会失去许多底层的细节，虽然便于理解，但是加大了编程的难度。所以分布式的抽象主要是在“实现”和“理解”之间取得一个平衡。抽象层次越高，理解起来越简单，实现起来越困难，事实上，这是一个贯穿于整个计算机系统各个子领域的权衡问题，没有通用的最优解，只有针对具体的合适的解决方法。我们的目标旨在寻找到一个足够好的抽象模型，尽可能让编程变得简单的同时容易让人可以理解。  
-那么，我们上面说要在“实现”和“理解”之间寻找到一个合适的抽象，那如何定义什么是合适的抽象？
+我们上面说要在“实现”和“理解”之间寻找到一个合适的抽象，那如何定义什么是合适的抽象？
 >What do we mean when say X is more abstract than Y? First, that X does not introduce anything new or fundamentally diﬀerent from Y. In fact, X may remove some aspects of Y or present them in a way that makes them more manageable. Second, that X is in some sense easier to grasp than Y, assuming that the things that X removed from Y are not important to the matter at hand.
 
 　　简单来说，就是用尽可能少的假设来描述清楚一个东西。你用的假设越少，你基于这个假设所涉及的系统普适性更高，能处理的场景也就越多，然而随之而来的，就是编程难度的提高。  

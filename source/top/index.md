@@ -6,7 +6,7 @@ keywords: top,文章阅读量排行榜
 ---
 <div id="top"></div>
 <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
-<script>AV.initialize(Ja6j11Iyo36Mmrc5INxiYSIx-gzGzoHsz, v6xwUOCxJcVCwOdrB7ufT9gO);</script>
+<script>AV.initialize("Ja6j11Iyo36Mmrc5INxiYSIx-gzGzoHsz", "v6xwUOCxJcVCwOdrB7ufT9gO");</script>
 <script type="text/javascript">
   var time=0
   var title=""

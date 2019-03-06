@@ -249,7 +249,7 @@
                   <span class="post-meta-item-text">{{ __('post.min2read') }} &asymp;</span>
                 {% endif %}
                 <span title="{{ __('post.min2read') }}">
-                  {{ min2read(post.content) }}
+                  {{ min2read(post.content) }} min
                 </span>
               {% endif %}
             </div>
@@ -338,6 +338,12 @@
 	{% if not is_index %}
 		{% include 'passage-end-tag.swig' %}
 	{% endif %}
+	</div>
+
+	<div>
+      {% if not is_index %}
+        {% include 'my-copyright.swig' %}
+      {% endif %}
 	</div>
 
     {% if theme.wechat_subscriber.enabled and not is_index %}
@@ -434,6 +440,10 @@
       {% endif %}
     </footer>
   </div>
+  
+	{% if not is_index %} 
+		{{ related_posts(post, site.posts) }} 
+	{% endif %}
   {######################}
   {### END POST BLOCK ###}
   {######################}

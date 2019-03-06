@@ -4,7 +4,7 @@
 
 # Site
 title: Sworduo's Blog
-subtitle: Snow, moon and flower.
+subtitle: 
 description: 千里之行，始于足下
 keywords:
 author: Sworduo
@@ -13,7 +13,7 @@ timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://yoursite.com
+url: http://sworduo.net
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
@@ -41,7 +41,7 @@ future: true
 highlight:
   enable: true
   line_number: true
-  auto_detect: false
+  auto_detect: true
   tab_replace:
   
 # Home page setting
@@ -85,3 +85,9 @@ deploy:
     github: https://github.com/sworduo/sworduo.github.io.git
     coding: https://git.coding.net/sworduo/sworduo.git
   branch: master
+
+search:
+  path: search.xml
+  field: post
+  format: html
+  limit: 10000
