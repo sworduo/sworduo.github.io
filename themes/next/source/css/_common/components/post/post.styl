@@ -44,6 +44,18 @@
   if hexo-config('motion.transition.coll_header') { .collection-title { opacity: 0; } }
 }
 
+// 文章内链接文本样式
+.post-body p a{
+  color: #0593d3; //原始链接颜色
+  border-bottom: none;
+  border-bottom: 1px solid #0593d3; //底部分割线颜色
+  &:hover {
+    color: #fc6423; //鼠标经过颜色
+    border-bottom: none;
+    border-bottom: 1px solid #fc6423; //底部分割线颜色
+  }
+}
+
 @import "post-expand";
 @import "post-collapse";
 @import "post-type";
