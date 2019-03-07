@@ -82,7 +82,7 @@ theme: next
 deploy:
   type: git
   repository: 
-    github: https://github.com/sworduo/sworduo.github.io.git
+    github: git@github.com:sworduo/sworduo.github.io.git
     coding: https://git.coding.net/sworduo/sworduo.git
   branch: master
 

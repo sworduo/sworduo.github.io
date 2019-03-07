@@ -1,7 +1,7 @@
 ---
-title: 关于我
-date: 2019-03-05 23:57:13
-type: "about"
-comments: false
+title: 
+date: 2019-03-06 20:44:25
 ---
-<center>Hi, welcome to my blog!</center>    
+<center><font size=10>Hi, welcome to my blog!<font></center>
+<center>作者很懒，什么都没有留下~~</center>
+![fish](index/fish.jpg)
