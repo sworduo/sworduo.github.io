@@ -2,7 +2,7 @@
 title: 分布式入门篇（三）
 date: 2019-03-06 16:16:16
 tags: 分布式
-categories: 分布式入门篇
+categories: 分布式
 copyright: true
 ---
 

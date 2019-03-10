@@ -3,7 +3,6 @@ title: 现代操作系统第五章——输入输出
 date: 2019-03-06 16:46:24
 tags: 
 - 操作系统
-- 进程
 categories: 操作系统
 copyright: true
 ---
