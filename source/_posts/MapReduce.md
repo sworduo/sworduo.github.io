@@ -10,10 +10,11 @@ categories:
 copyright: true
 ---
 
-<div align=center><img width="400" height="400" src="MapReduce-2.png" alt="overview"/></div>
+<center><font size=8>MapReduce</font></center>
 
-#	MapReduce
-MapReduce是谷歌在2004年发布的一项新技术，该技术旨在解决大数据规模下的日常问题。MapReduce有两部分组成：Map负责将输入的键/值对转换成适合处理的键/值对，而reduce则负责将map产生的键/值对按照要求合并起来。MapReduce隐藏了分布式底层的细节，比如容错性、局部最优化、负载均衡等，使得一个对并行计算一窍不通的人都能很好的利用分布式系统的优势来解决自己的问题。换句话说，MapReduce将分布式计算设置成一个接口，用户可以假设这个接口能提高强大的、正确的、有效的分布式计算能力，用户本身只需要提供自己想要完成的任务即可。MapReduce是数据增长到一定规模的必然产物，类似操作系统一样，对底层分布式的相关细节做一个抽象，将控制和实现分开，大大提升了生产力。  
+<div align=center><img width="600" height="400" src="MapReduce-2.png" alt="overview"/></div>
+
+　　MapReduce是谷歌在2004年发布的一项新技术，该技术旨在解决大数据规模下的日常问题。MapReduce有两部分组成：Map负责将输入的键/值对转换成适合处理的键/值对，而reduce则负责将map产生的键/值对按照要求合并起来。MapReduce隐藏了分布式底层的细节，比如容错性、局部最优化、负载均衡等，使得一个对并行计算一窍不通的人都能很好的利用分布式系统的优势来解决自己的问题。换句话说，MapReduce将分布式计算设置成一个接口，用户可以假设这个接口能提高强大的、正确的、有效的分布式计算能力，用户本身只需要提供自己想要完成的任务即可。MapReduce是数据增长到一定规模的必然产物，类似操作系统一样，对底层分布式的相关细节做一个抽象，将控制和实现分开，大大提升了生产力。  
 
 #	MapReduce解决了什么问题？
 当数据规模持续增大时，一些简单的问题就变得十分复杂。比如统计不同字母出现的频次，如果对象是一篇文章，单机就能很好的完成任务；如果对象是今日头条所有的新闻，那用单机来处理的速度和所花费的时间将会令人感到绝望，而MapReduce就是为了解决大规模数据下的常规问题而提出的一种算法。
@@ -30,13 +31,13 @@ MapReduce程序将数据划分到M个计算节点中做映射操作，产生的�
 4.	map节点的中间结果将会周期性的存到本次磁盘，在存放时会调用划分函数，将中间结果划分到R个不同区域中。随后，存放这些中间结果的本地磁盘的地址将会被发送到master节点，master节点负责联系相应的reduce节点接收数据。
 5.	当reduce节点收到master节点的通知后，将会通过远程连接取走map节点上的数据，当reduce节点取完数据后，会对取来的数据进行一次排序，使得key值相同的数据连在一起，便于处理，这么做是因为会有很多个不同key值对应的数据映射到同一个reduce节点上。（划分函数是hash(key)mod R,显然一些key值的数据哈希值相同）
 6.	reduce节点利用用户定义的reduce函数处理接受到的数据，并将结果放到指定输出文件里。一个reduce节点对应GFS上的一个输出文件。
-7.	当所有的map和reduce操作完成时，master节点会通过用户程序，值此完成一次mapreduce操作。  
+7.	当所有的map和reduce操作完成时，master节点会通知用户程序，至此完成一次mapreduce操作。  
 
 当mapreduce操作完成时，最后的结果将会存放到R个指定输出文件里，用户可以根据需求合并这R个文件的结果，或者将这R个文件作为下一个mapreduce操作的输入。
 >一般而言，map节点的数量应该非常大，而reduce节点的数量则相对少很多。
 
 ##	master节点的作用
-master节点会记录所有map节点和reduce节点的状态（idel, in-progress or completed)，同时也会记录已经被分配了任务的机器节点方便调配。master节点可以看成是map节点和reduce节点的管道，map节点利用master节点来通知相应的reduce节点来取走相应的数据。
+master节点会记录所有map节点和reduce节点的状态（idle, in-progress or completed)，同时也会记录已经被分配了任务的机器节点方便调配。master节点可以看成是map节点和reduce节点的管道，map节点利用master节点来通知相应的reduce节点来取走相应的数据。
 
 ##	fault tolerance
 *	节点失联：如果map节点挂了，那么master节点重新分配这台map节点分配到的map任务。如果reduce节点挂了，那么重新安排一台新的机器来reduce，不需要重新执行这台机器的reduce任务。因为map节点的中间结果是存放到本地的，这意味着map节点挂了，它的任务的执行结果也就拿不到了。但是reduce节点是将结果存放到指定输出文件的，所以reduce节点挂了，它的处理结果还在，因此不需要重新启动reduce任务。
