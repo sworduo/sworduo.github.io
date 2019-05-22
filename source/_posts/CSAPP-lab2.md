@@ -21,7 +21,7 @@ copyright: true
 
 ```
 
-objdump -t bomb > code.txt
+objdump -d bomb > code.txt
 
 ```
 
