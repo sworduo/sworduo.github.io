@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-center-circle.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="分布式,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="分布式编程是一门关于在多台机器上实现，在一台机器上可以解决的问题，的哲学。 一般情况下，计算机系统有两种需要完成的基本任务：1.存储；2.计算，事实上，如果你拥有无限的内存以及无限的研发时间，我们根本不需要分布式（只考虑计算任务的情况），然而这很明显是不可能的事情。所以，我们很自然地就想通过增加机器来解决大数据问题。然而不幸的是，无脑增加机器不总是能提升解决问题的速度，特别是当机器数量达到一定程">
+<meta name="keywords" content="分布式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式入门篇（一）">
+<meta property="og:url" content="http://sworduo.net/2019/03/06/chapter1/index.html">
+<meta property="og:site_name" content="Sworduo&#39;s Blog">
+<meta property="og:description" content="分布式编程是一门关于在多台机器上实现，在一台机器上可以解决的问题，的哲学。 一般情况下，计算机系统有两种需要完成的基本任务：1.存储；2.计算，事实上，如果你拥有无限的内存以及无限的研发时间，我们根本不需要分布式（只考虑计算任务的情况），然而这很明显是不可能的事情。所以，我们很自然地就想通过增加机器来解决大数据问题。然而不幸的是，无脑增加机器不总是能提升解决问题的速度，特别是当机器数量达到一定程">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://sworduo.net/2019/03/06/chapter1/head.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/sworduo/MIT6.824/master/brief%20introduction/pic/chapter1-1.png">
+<meta property="og:updated_time" content="2019-06-22T11:58:11.636Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="分布式入门篇（一）">
+<meta name="twitter:description" content="分布式编程是一门关于在多台机器上实现，在一台机器上可以解决的问题，的哲学。 一般情况下，计算机系统有两种需要完成的基本任务：1.存储；2.计算，事实上，如果你拥有无限的内存以及无限的研发时间，我们根本不需要分布式（只考虑计算任务的情况），然而这很明显是不可能的事情。所以，我们很自然地就想通过增加机器来解决大数据问题。然而不幸的是，无脑增加机器不总是能提升解决问题的速度，特别是当机器数量达到一定程">
+<meta name="twitter:image" content="http://sworduo.net/2019/03/06/chapter1/head.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://sworduo.net/2019/03/06/chapter1/">
+
+
+
+
+
+  <title>分布式入门篇（一） | Sworduo's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sworduo's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://sworduo.net/2019/03/06/chapter1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sworduo">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/horse.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sworduo's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">分布式入门篇（一）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-06T16:08:06+08:00">
+                2019-03-06
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于&#58;</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2019-06-22T19:58:11+08:00">
+                2019-06-22
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/分布式/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/03/06/chapter1/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/06/chapter1/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/03/06/chapter1/" class="leancloud_visitors" data-flag-title="分布式入门篇（一）">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.4k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  8 min
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <img src="/2019/03/06/chapter1/head.jpg">
+<p>分布式编程是一门关于在多台机器上实现，在一台机器上可以解决的问题，的哲学。 一般情况下，计算机系统有两种需要完成的基本任务：1.<strong>存储</strong>；2.<strong>计算</strong>，事实上，如果你拥有无限的内存以及无限的研发时间，我们根本不需要分布式（只考虑计算任务的情况），然而这很明显是不可能的事情。所以，我们很自然地就想通过增加机器来解决大数据问题。然而不幸的是，无脑增加机器不总是能提升解决问题的速度，特别是当机器数量达到一定程度时，由于网络通信时间的消耗，以及复制等各种操作，单纯的增加机器很难提升整个分布式集群的计算能力。所以研究分布式算法，特别是研究如何高效的整合多台机器以提供更加强有力的计算能力的方法，是非常有必要的。<br><a id="more"></a></p>
+<center><font size="6"><a href="http://book.mixu.net/distsys/intro.html" target="_blank" rel="noopener">Chapter1–Distributed systems at a high level</a><font></font></font></center>
+
+<pre><code>author:sworduo     date:Feb 25, Mon, 2019
+</code></pre><p><a href="https://juejin.im/entry/5881c6351b69e60058d003b0" target="_blank" rel="noopener">参考</a>:袖珍分布式系统（一）</p>
+<h1 id="scalability-and-other-good-things"><a href="#scalability-and-other-good-things" class="headerlink" title="scalability and other good things"></a>scalability and other good things</h1><p>许多问题在小规模下是很好解决的，但是同样的问题扩展到较大规模时就很容易让人感到绝望。比如让你去数一间房间里的人数，那时轻而易举的事情，但是让你去数一个国家的人数，难度就上天了。所以分布式系统要解决的第一个问题是规模的问题。具体来说，我们希望我们所设计的分布式系统在数据规模变大的情况下仍然游刃有余，至少，不能出现数量规模增长之后，计算能力陡然下降的情况，要能适应数据增大规模扩张的场景。有三种典型的scalability：</p>
+<ul>
+<li>size scalability:随着计算节点的增加，系统的计算能力也呈线性的增加，并且不会出现延迟变大的情况。</li>
+<li>geographic scalability:能够在不同地方设立不同的数据中心，使得在南极和北极查询的速度都是一样的快，数据中心之间的数据延迟也应该很小才对。</li>
+<li>administrative scalability:简单来说，就是当机器增加时，不能引入额外的管理成本（比如说管理机器和工作机器之间的比例，而不是管理机器的数量）。  <blockquote>
+<p>有两个重要指标:1.<strong>performance</strong>和2.<strong>availability</strong>来衡量系统的性能。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="performance-and-latency"><a href="#performance-and-latency" class="headerlink" title="performance(and latency)"></a>performance(and latency)</h2><p>performan主要由以下三点来体现：</p>
+<ul>
+<li>给定一定数量的工作，其响应时间应该很短（延迟很小）。</li>
+<li>高吞吐率（加工时间）</li>
+<li>低的计算资源使用率。（就是用尽可能少的资源完成尽可能多的事情）<blockquote>
+<p>以上三点很难兼得，然而大家普遍关注低延迟的情况，因为延迟时间受限于物理材质，很难通过其他py手段来解决延迟的问题。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="Latency"><a href="#Latency" class="headerlink" title="Latency"></a>Latency</h2><ul>
+<li><strong>什么是Latency</strong>：一个事件从发生到被观察到的时间间隔，比如说从你被僵尸咬了一口，到你真的变成僵尸这一段时期，可以理解为僵尸病毒的潜伏期  </li>
+<li><strong>分布式中的latency</strong>：（这个我也不是很懂）加入一个分布式系统仅仅是返回其所存储的数字的和，比如说一个系统存储了1,2,3那么查询这个系统就会返回6。此时latency是指，你写入了一个新的数字4，到客户真正看到这个4给系统带来的变化的时间就叫做latency。当分布式系统内存储的数字不变时，latency应该是0（不考虑网络情况什么的）。</li>
+<li><strong>最低延迟时间</strong>：分布式系统中存在着必定会有的延迟时间，就是信息传播的速度以及每次操作中硬件带来的延时。  <blockquote>
+<p>每次查询的最低延迟取决于1.操作本身的延时；2.信息传播的延时。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="Availability-and-fault-tolerance"><a href="#Availability-and-fault-tolerance" class="headerlink" title="Availability (and fault tolerance)"></a>Availability (and fault tolerance)</h2><ul>
+<li><strong>availability</strong>可以理解为分布式系统的有效时间，或者说是客户可以得到服务的时间，最理想的情况下，一个系统的availability等于开机时间/(开机时间+关机时间），这是没考虑断网等的理想情况。单机的availability就等于其所唯一依赖的机器的availability，而分布式系统的availability则等于所有提供同样服务的机器的availibility。</li>
+<li><strong>fault tolerance</strong>是指你给所有考虑到的错误设置相应的处理模式，使得当有给定的错误发生时，能执行相应的处理程序来解决这个错误。显然，你无法tolerate你没有考虑到的错误。就和try catch其实差不多，你只能处理你写好的catch的情况。</li>
+</ul>
+<h1 id="如何提升分布式系统的性能"><a href="#如何提升分布式系统的性能" class="headerlink" title="如何提升分布式系统的性能"></a>如何提升分布式系统的性能</h1><h2 id="分布式系统的约束"><a href="#分布式系统的约束" class="headerlink" title="分布式系统的约束"></a>分布式系统的约束</h2><p>分布式系统主要受到两个物理因素的制约：</p>
+<ul>
+<li>节点的数量（随着存储和计算能力的需求而提升）</li>
+<li>节点之间的距离（影响信息传播的速度）<br>在上面的限制条件下：  </li>
+<li>独立节点数量的提升将会提高系统出错的概率（降低availibility和增加administrative costs)</li>
+<li>独立节点数量的提升可能会增加节点之间的交流成本。（也即是随着节点规模的增加，性能并不能呈线性提升）</li>
+<li>节点隔得越远，信息传播的最低延迟时间将会越长。<blockquote>
+<p>剔除上面这些基于物理限制的制约因素之后，才真正到达考虑系统设计的范畴。  </p>
+</blockquote>
+</li>
+</ul>
+<p>　　分布式的performance和availability取决于分布式系统对客户的保证。比如说，一个分布式系统可能能保证在1分钟内让全世界的客户看到某个人在某个地方进行的写操作；又比如，一个分布式保证了某个人在系统上存储的数据可以保存至少一年不丢失；再比如，一个分布式系统可能保证某个大任务的计算时间和其规模呈正比等等。一个分布式系统的性能由其提供的服务和实际的使用体验来保证。<br>　　事实上，制约分布式系统性能的还有另外一个重要的因素：设计分布式系统的人的经验和能力。我们常常会遇到错误和异常，错误是指在你预料之中的偏离正确相应的反应，异常是指在你意料之外的系统反应，显然，如果你足够聪明和经验丰富，那么错误就会越多，异常就会越少，而错误是可以提前预料并设置应对措施的，因此系统健壮性也就越高。  </p>
+<h2 id="Abstractions-and-models"><a href="#Abstractions-and-models" class="headerlink" title="Abstractions and models"></a>Abstractions and models</h2><ul>
+<li><strong>抽象</strong>：隐藏和问题无关的细节，使得系统更加易于研发。一个优秀的抽象能使得系统更加容易让人理解，以及便于开发人员找到问题的关键。</li>
+<li><strong>model</strong>：用一种更为精确方式来描述系统的关键特性。<blockquote>
+<p>抽象和模块化的程度的选择是一个trade-off，就好像c语言和python的差别。python隐藏了很多底层操作系统的细节，易于理解和开发，然而效率低下；c语言贴合底层，性能优越，但是对小白不友好。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="partition-and-replicate"><a href="#partition-and-replicate" class="headerlink" title="partition and replicate"></a>partition and replicate</h2><p>有两种可以作用于要处理的数据集的方法：</p>
+<ul>
+<li><strong>partition</strong>:将数据集划分为互斥的子集，便于并行处理。</li>
+<li><strong>replicate</strong>:在多台机器保存同一个数据的副本，用于减少查询时间以及提高容错率。<br><img src="https://raw.githubusercontent.com/sworduo/MIT6.824/master/brief%20introduction/pic/chapter1-1.png" alt="partition and replicate" title="p&amp;r"></li>
+</ul>
+<h3 id="partition"><a href="#partition" class="headerlink" title="partition"></a>partition</h3><ul>
+<li>通过限制每个节点所要处理的数据规模以及在同一数据分片内寻找相关数据来提升性能。（有点类似操作系统里面的，先索引分块，再顺序查找）</li>
+<li>分块之后，各个节点将是相互独立的，不会因为一个节点失效而使得整个系统瘫痪，增加系统允许的失效节点的数量，提高系统的健壮性。  <blockquote>
+<p>一般而言，数据是针对具体任务要求而进行划分的，很难归纳出一个通用的数据划分的方法，所以更进一步的分析将会在后续章节结合具体事例来讲述。总的来说，数据要以系统的访问模式来进行划分。比如说查询较多的任务，尽量把相关的数据放在一起，以提高查询速度；计算较多的任务，尽量把不相关的数据放在一起，提升并行性等等。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="replicate"><a href="#replicate" class="headerlink" title="replicate"></a>replicate</h3><p>replicate就是在多台机器上存储同一个数据的备份，使得更多的服务器参与到计算中。有个大佬说：<br>···<br>复制！生活中所有问题的起源和解决方法。<br>···<br>有种人类本质复读机的感觉。</p>
+<ul>
+<li>优势：通过replicate，可以提升系统的扩展性，性能和容错率。</li>
+<li>劣势：replication也带来了一系列的问题，比如说同一个数据的副本存在于多台机器中，那么当某一台机器上的副本被修改时，其他机器也理应作相应的修改，这就引入了额外的通信成本。</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+	
+	</div>
+
+	<div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/2019/03/06/chapter1/">分布式入门篇（一）</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问 Sworduo 的个人博客">Sworduo</a></p>
+  <p><span>发布时间:</span>2019年03月06日 - 16:03</p>
+  <p><span>最后更新:</span>2019年06月22日 - 19:06</p>
+  <p><span>原始链接:</span><a href="/2019/03/06/chapter1/" title="分布式入门篇（一）">http://sworduo.net/2019/03/06/chapter1/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://sworduo.net/2019/03/06/chapter1/" aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+    });
+    });  
+</script>
+
+      
+	</div>
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>快到碗里来！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.png" alt="Sworduo 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+	
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/分布式/" rel="tag"># 分布式</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/06/chapter2/" rel="prev" title="分布式入门篇（二）">
+                分布式入门篇（二） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+	 
+		<h3> 相关文章：</h3><ul class="related-posts"><li><a href="/2019/05/19/MIT6-824-lab1-MapReduce/">MIT6.824-lab1-MapReduce</a></li><li><a href="/2019/05/22/MIT6-824-LEC04-VMWARE-ft/">MIT6.824-LEC04-VMWARE-ft</a></li><li><a href="/2019/03/06/chapter5/">分布式入门篇（五）</a></li><li><a href="/2019/05/21/MIT6-824-LEC3-GFS/">MIT6.824-LEC3-GFS</a></li><li><a href="/2019/03/10/MapReduce/">MapReduce</a></li><li><a href="/2019/03/06/chapter3/">分布式入门篇（三）</a></li><li><a href="/2019/03/06/chapter0/">分布式入门篇（零）</a></li><li><a href="/2019/03/06/chapter2/">分布式入门篇（二）</a></li><li><a href="/2019/03/06/chapter4/">分布式入门篇（四）</a></li><li><a href="/2019/05/29/MIT6-824-LEC05-Raft/">MIT6.824-LEC05-Raft</a></li></ul> 
+	
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/horse.jpg" alt="Sworduo">
+            
+              <p class="site-author-name" itemprop="name">Sworduo</p>
+              <p class="site-description motion-element" itemprop="description">千里之行，始于足下</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/sworduo" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:sworduo@163.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+		  
+		
+			<div class="links-of-blogroll motion-element links-of-blogroll-block">
+			  <div class="links-of-blogroll-title">
+				<!-- modify icon to fire by szw -->
+				<i class="fa fa-history fa-" aria-hidden="true"></i>
+				近期文章
+			  </div>
+			  <ul class="links-of-blogroll-list">
+				
+				
+				  <li>
+					<a href="/2019/06/21/MIT6-824-lab3-kvservice/" title="MIT6-824-lab3-kvservice" target="_blank">MIT6-824-lab3-kvservice</a>
+				  </li>
+				
+				  <li>
+					<a href="/2019/06/04/MIT6-824-lab2-raft/" title="MIT6.824-lab2-raft" target="_blank">MIT6.824-lab2-raft</a>
+				  </li>
+				
+				  <li>
+					<a href="/2019/05/29/MIT6-824-LEC05-Raft/" title="MIT6.824-LEC05-Raft" target="_blank">MIT6.824-LEC05-Raft</a>
+				  </li>
+				
+				  <li>
+					<a href="/2019/05/22/CSAPP-lab3-Attack/" title="CSAPP-lab3-Attack" target="_blank">CSAPP-lab3-Attack</a>
+				  </li>
+				
+				  <li>
+					<a href="/2019/05/22/MIT6-824-LEC04-VMWARE-ft/" title="MIT6.824-LEC04-VMWARE-ft" target="_blank">MIT6.824-LEC04-VMWARE-ft</a>
+				  </li>
+				
+			  </ul>
+			</div>
+		
+		
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#scalability-and-other-good-things"><span class="nav-number">1.</span> <span class="nav-text">scalability and other good things</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#performance-and-latency"><span class="nav-number">1.1.</span> <span class="nav-text">performance(and latency)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Latency"><span class="nav-number">1.2.</span> <span class="nav-text">Latency</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Availability-and-fault-tolerance"><span class="nav-number">1.3.</span> <span class="nav-text">Availability (and fault tolerance)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何提升分布式系统的性能"><span class="nav-number">2.</span> <span class="nav-text">如何提升分布式系统的性能</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式系统的约束"><span class="nav-number">2.1.</span> <span class="nav-text">分布式系统的约束</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Abstractions-and-models"><span class="nav-number">2.2.</span> <span class="nav-text">Abstractions and models</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#partition-and-replicate"><span class="nav-number">2.3.</span> <span class="nav-text">partition and replicate</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#partition"><span class="nav-number">2.3.1.</span> <span class="nav-text">partition</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#replicate"><span class="nav-number">2.3.2.</span> <span class="nav-text">replicate</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart" aria-hidden="true"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sworduo</span>
+
+<!--
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">83.4k</span>
+  
+-->
+</div>
+
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共83.4k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: true,
+        notify: true,
+        appId: 'Ja6j11Iyo36Mmrc5INxiYSIx-gzGzoHsz',
+        appKey: 'v6xwUOCxJcVCwOdrB7ufT9gO',
+        placeholder: 'Come on bro',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Ja6j11Iyo36Mmrc5INxiYSIx-gzGzoHsz", "v6xwUOCxJcVCwOdrB7ufT9gO");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  <!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/love.js"></script>
+<!-- 背景动画 -->
+<script type="text/javascript" src="/js/src/particle.js"></script>
+
+</body>
+</html>

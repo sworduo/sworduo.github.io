@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-center-circle.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="分布式,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="分布式编程主要是解决由于分布式而带来的一系列问题。我们希望把分布式系统看成是具有超大规模处理能力的单机系统，然而这种高层次的抽象会失去许多底层的细节，虽然便于理解，但是加大了编程的难度。所以分布式的抽象主要是在“实现”和“理解”之间取得一个平衡。抽象层次越高，理解起来越简单，实现起来越困难，事实上，这是一个贯穿于整个计算机系统各个子领域的权衡问题，没有通用的最优解，只有针对具体的合适的解决方">
+<meta name="keywords" content="分布式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式入门篇（二）">
+<meta property="og:url" content="http://sworduo.net/2019/03/06/chapter2/index.html">
+<meta property="og:site_name" content="Sworduo&#39;s Blog">
+<meta property="og:description" content="分布式编程主要是解决由于分布式而带来的一系列问题。我们希望把分布式系统看成是具有超大规模处理能力的单机系统，然而这种高层次的抽象会失去许多底层的细节，虽然便于理解，但是加大了编程的难度。所以分布式的抽象主要是在“实现”和“理解”之间取得一个平衡。抽象层次越高，理解起来越简单，实现起来越困难，事实上，这是一个贯穿于整个计算机系统各个子领域的权衡问题，没有通用的最优解，只有针对具体的合适的解决方">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://sworduo.net/2019/03/06/chapter2/head.jpg">
+<meta property="og:updated_time" content="2019-06-22T11:58:11.638Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="分布式入门篇（二）">
+<meta name="twitter:description" content="分布式编程主要是解决由于分布式而带来的一系列问题。我们希望把分布式系统看成是具有超大规模处理能力的单机系统，然而这种高层次的抽象会失去许多底层的细节，虽然便于理解，但是加大了编程的难度。所以分布式的抽象主要是在“实现”和“理解”之间取得一个平衡。抽象层次越高，理解起来越简单，实现起来越困难，事实上，这是一个贯穿于整个计算机系统各个子领域的权衡问题，没有通用的最优解，只有针对具体的合适的解决方">
+<meta name="twitter:image" content="http://sworduo.net/2019/03/06/chapter2/head.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://sworduo.net/2019/03/06/chapter2/">
+
+
+
+
+
+  <title>分布式入门篇（二） | Sworduo's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sworduo's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://sworduo.net/2019/03/06/chapter2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sworduo">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/horse.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sworduo's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">分布式入门篇（二）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-06T16:09:21+08:00">
+                2019-03-06
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于&#58;</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2019-06-22T19:58:11+08:00">
+                2019-06-22
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/分布式/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/03/06/chapter2/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/06/chapter2/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/03/06/chapter2/" class="leancloud_visitors" data-flag-title="分布式入门篇（二）">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3.9k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  16 min
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <img src="/2019/03/06/chapter2/head.jpg">
+<p>　　分布式编程主要是解决由于分布式而带来的一系列问题。我们希望把分布式系统看成是具有超大规模处理能力的单机系统，然而这种高层次的抽象会失去许多底层的细节，虽然便于理解，但是加大了编程的难度。所以分布式的抽象主要是在“实现”和“理解”之间取得一个平衡。抽象层次越高，理解起来越简单，实现起来越困难，事实上，这是一个贯穿于整个计算机系统各个子领域的权衡问题，没有通用的最优解，只有针对具体的合适的解决方法。我们的目标旨在寻找到一个足够好的抽象模型，尽可能让编程变得简单的同时容易让人可以理解。<br><a id="more"></a></p>
+<center><font size="6"><a href="http://book.mixu.net/distsys/abstractions.html" target="_blank" rel="noopener">Up and down the level of abstraction</a><font></font></font></center>
+
+<pre><code>author:Sworduo    date:Feb 26, Tue, 2019 
+</code></pre><p><a href="https://cloud.tencent.com/developer/article/1193906" target="_blank" rel="noopener">参考1</a>:袖珍分布式系统（二）<br><a href="https://www.ruanyifeng.com/blog/2018/07/cap.html" target="_blank" rel="noopener">参考2</a>:CAP定理的含义  </p>
+<p>我们上面说要在“实现”和“理解”之间寻找到一个合适的抽象，那如何定义什么是合适的抽象？</p>
+<blockquote>
+<p>What do we mean when say X is more abstract than Y? First, that X does not introduce anything new or fundamentally diﬀerent from Y. In fact, X may remove some aspects of Y or present them in a way that makes them more manageable. Second, that X is in some sense easier to grasp than Y, assuming that the things that X removed from Y are not important to the matter at hand.</p>
+</blockquote>
+<p>　　简单来说，就是用尽可能少的假设来描述清楚一个东西。你用的假设越少，你基于这个假设所涉及的系统普适性更高，能处理的场景也就越多，然而随之而来的，就是编程难度的提高。<br>抽象能帮助我们从纷繁复杂的细节中提炼出问题的关键，当我们找到问题的症结时，就能设计出相应的解决方案，所以很多时候难点并不在于解决困难，而是发现问题，甚至是意识到原来这是一个问题。<br>　　这同样引出一个问题，描述清楚一个东西所需要的最少假设是多少？最简单的方法是列出所有可能的假设，然后一样一样的排除，思考当我排除掉这个假设时，剩余的假设能否清楚的描述一个东西？如果能，就舍去这个假设，如果不能，就留下这个假设。然而“最少的假设”本身就是不存在的，针对每个问题都有不同的“最少假设”，甚至针对不同时期的同一个问题，随着产品的扩大，其所需要的“最小假设”也是不断变化的，前期被舍去的假设后面可能要被重新引入，这是一个动态变化的过程。然而不管怎样变化，核心要义还是用最少的假设去完成我们想要的功能。<br>针对分布式，根据能保证系统正常运行的同时，所需要的最少假设所演化出来的设计就是我们常说的系统模型。  </p>
+<h1 id="A-system-model"><a href="#A-system-model" class="headerlink" title="A system model"></a>A system model</h1><p>分布式系统最大的属性就是分布式，一个分布式系统中的程序至少需要含有以下这些特点：</p>
+<ul>
+<li>run concurrently on independent nodes【任务可以在各个独立节点上并发执行】</li>
+<li>are connected by a network that may introduce nondeterminism and message loss【节点之间通过网络互连，这可能会造成信息丢失和不确定性】</li>
+<li>and have no shared memory or shared clock【不共享内存和时钟】<br>具体的解释是：</li>
+<li>each node executes a program concurrently【每个节点都并发执行】</li>
+<li>knowledge is local: nodes have fast access only to their local state, and any information about global state is potentially out of date 【每个节点只知道自己节点上的信息】</li>
+<li>nodes can fail and recover from failure independently 【每个节点失败和恢复都是独立的】</li>
+<li>messages can be delayed or lost (independent of node failure; it is not easy to distinguish network failure and node failure) 【通信是不可靠的】</li>
+<li>and clocks are not synchronized across nodes (local timestamps do not correspond to the global real time order, which cannot be easily observed)【时钟不同步】<br>系统模型的定义：<blockquote>
+<p>System model：a set of assumptions about the environment and facilities on which a distributed system is implemented</p>
+</blockquote>
+</li>
+</ul>
+<p>简单的说，系统模式就是实现分布式系统的环境和工具所依赖的一系列假设。系统模型中还定义了关于environment and facilities的假设，这些假设包括：</p>
+<ul>
+<li>what capabilities the nodes have and how they may fail 【每个节点能力和失败方式】</li>
+<li>how communication links operate and how they may fail and 【节点间通信方式和失败方式】</li>
+<li>properties of the overall system, such as assumptions about time and order【整个系统属性：如时序】<br>健壮系统：基于最少的假设来设计的系统，系统在于普适性强，缺点在于难以理解。<br>下面具体介绍nodes的属性以及links and time and order。</li>
+</ul>
+<h2 id="Nodes-in-our-system-model"><a href="#Nodes-in-our-system-model" class="headerlink" title="Nodes in our system model"></a>Nodes in our system model</h2><p>节点需要提供计算和存储能力，其拥有以下这些特点：</p>
+<ul>
+<li>the ability to execute a program【执行程序】</li>
+<li>the ability to store data into volatile memory (which can be lost upon failure) and into stable state (which can be read after a failure)【在不稳定的内存中存储信息的能力，以及恢复正常的能力】</li>
+<li>a clock (which may or may not be assumed to be accurate)【时钟】<br>有许多可能的failure model，一种是crash-recovery failure model，指的是系统只能因为崩溃而拒绝提供服务，并且能在崩溃后自动恢复。另一种是Byzantine fault tolerance，这是现实生活中几乎不会遇到的模型，因为其允许出现随机的错误，显然这种系统非常作，很难伺候。  </li>
+</ul>
+<h2 id="Communication-links-in-our-system-model"><a href="#Communication-links-in-our-system-model" class="headerlink" title="Communication links in our system model"></a>Communication links in our system model</h2><p>分布式系统中最难处理的假设就是通信假设，我们在分布式系统中，一个系统很难知道另一个系统的情况，因为任何的通信都是不可靠的，信息都无法交流，还怎么知道别人的情况，因此分布式系统中，能依赖的只有节点本身的信息。</p>
+<h2 id="Timing-ordering-assumptions"><a href="#Timing-ordering-assumptions" class="headerlink" title="Timing / ordering assumptions"></a>Timing / ordering assumptions</h2><p>在分布式系统中我们必须认识到：每个node看到的世界都是不同的，这个不同来自于一个事实：信息的传输需要时间。对于同一件事情，每个节点看到这个事情的时间都是不一样的，因此每个节点看到的世界，其时间点都是不同的。<br>有两个关于时间的主要的模型：</p>
+<ul>
+<li>Synchronous system: model Processes execute in lock-step; there is a known upper bound on message transmission delay; each process has an accurate clock</li>
+<li>Asynchronous system:model No timing assumptions - e.g. processes execute at independent rates; there is no bound on message transmission delay; useful clocks do not exist</li>
+</ul>
+<h2 id="The-consensus-problem"><a href="#The-consensus-problem" class="headerlink" title="The consensus problem"></a>The consensus problem</h2><p>下面对网络是否分区包含在错误模型中和网络传输是同步还是异步模型两个条件的讨论</p>
+<ul>
+<li>whether or not network partitions are included in the failure model, and【网络分区是否考虑在模型中】</li>
+<li>synchronous vs. asynchronous timing assumptions【同/异步】<br>首先介绍一下什么是一致性模型：</li>
+<li>Agreement: Every correct process must agree on the same value.【节点内容一致】</li>
+<li>Integrity: Every correct process decides at most one value, and if it decides some value, then it must have been proposed by some process.【不太懂说啥，意思可能是值和机器直接有对应关系】</li>
+<li>Termination: All processes eventually reach a decision.【所有节点最终会达成一致】</li>
+<li>Validity: If all correct processes propose the same value V, then all correct processes decide V.【所有节点观点一致时，其所作出的决定就是有效的】<br>一致性问题是分布式系统里最核心的问题，解决了这个问题，我们就不用关注各个节点数据之间可能出现的不一致和分歧，这也是解决后续许多高级问题的基石。  </li>
+</ul>
+<h1 id="Two-impossibility-results"><a href="#Two-impossibility-results" class="headerlink" title="Two impossibility results"></a>Two impossibility results</h1><p>什么是impossibility results:</p>
+<blockquote>
+<p>A proof of impossibility, also known as negative proof, proof of an impossibility theorem, or negative result, is a proof demonstrating that a particular problem cannot be solved, or cannot be solved in general. Often proofs of impossibility have put to rest decades or centuries of work attempting to find a solution. To prove that something is impossible is usually much harder than the opposite task; it is necessary to develop a theory. Impossibility theorems are usually expressible as universal propositions in logic (see universal quantification).</p>
+</blockquote>
+<p>当确定了不可能结果之后，我们就不用再在这个方向上白费力气，这也是一种排除法，可以指导我们解决问题的方向。<br>在分布式系统中存在两个最重要的不能结果，FLP和CAP,FLP主要用于学术研究，这里不讲，下面着重介绍CAP。</p>
+<h2 id="The-CAP-theorem"><a href="#The-CAP-theorem" class="headerlink" title="The CAP theorem"></a>The CAP theorem</h2><p>CAP的含义：</p>
+<ul>
+<li>Consistency: all nodes see the same data at the same time.（一致性）</li>
+<li>Availability: node failures do not prevent survivors from continuing to operate.（可用性）</li>
+<li>Partition tolerance: the system continues to operate despite message loss due to network and/or node failure（分区容忍性）<br>具体来说，分区容错的意思是，区间通信可能会失败，比如一台机器在中国，一台机器在美国，他们之间可能无法通信，实际编程时需要考虑到两台机器之间无法通信/通信失败的情况。<br>一致性是指某台机器将某个对象的值修改后，其他人在其他机器再次访问同一个对象时，都应该看到新值而不是旧值。<br>可用性是指只要收到用户的请求，服务器就必须返回。  <blockquote>
+<p>一致性和可用性的矛盾：一致性和可用性很难同时成立，因为存在通信失败的可能。<br>假如有两台机器A和B，当你在A修改了对象C的值，这时候如果强调一致性，那么A机器需要锁定B机器的读和写，在B将对象C的值修改之前，B机器不能进行任何其他的读和写，若在这期间有用户对服务器发出对对象C的请求，将不会得到任何答复，这样可用性的不满足了。若要满足可用性，那么B机器的读写就不能被锁定，这样由于延时等原因，一致性就不能满足了，所以二者不可兼得。  </p>
+</blockquote>
+</li>
+</ul>
+<p>事实上，CAP三个特性只有2个能同时满足，因此会出现3种系统：</p>
+<ul>
+<li>CA (consistency + availability). Examples include full strict quorum protocols, such as two-phase commit.</li>
+<li>CP (consistency + partition tolerance). Examples include majority quorum protocols in which minority partitions are unavailable such as Paxos.</li>
+<li>AP (availability + partition tolerance). Examples include protocols using conﬂict resolution, such as Dynamo.<br>CA和CP系统都提供了强一致性模型，不同是CA不可以容忍网络分区，而CP在2f+1个节点中，可以容忍f个节点失败，原因很简单：</li>
+<li>A CA system does not distinguish between node failures and network failures, and hence must stop accepting writes everywhere to avoid introducing divergence (multiple copies). It cannot tell whether a remote node is down, or whether just the network connection is down: so the only safe thing is to stop accepting writes.【不能区分网络分区和节点失败，因此必须停止写入避免引入不一致】</li>
+<li>A CP system prevents divergence (e.g. maintains single-copy consistency) by forcing asymmetric behavior on the two sides of the partition. It only keeps the majority partition around, and requires the minority partition to become unavailable (e.g. stop accepting writes), which retains a degree of availability (the majority partition) and still ensures single-copy consistency.【即使网络分区了，大多数节点的一方还是能够提供服务】<br>CP系统因为将网络分区考虑到了failure model中，因此能够通过类似Paxos, Raft 的协议来区分a majority partition and a minority partition<br>CA则由于没有考虑网络分区的情况，因此无法知道一个节点不响应式因为节点收不到消息还是节点失败了，因此只能够通过停止服务来防止出现数据一致，在CA中由于不能保证网络可靠性，因此通过使用two-phase commit algorithm来保证数据一致性。<br>从CAP理论中，我们可以得到4个结论：</li>
+<li>First, that many system designs used in early distributed relational database systems did not take into account partition tolerance (e.g. they were CA designs). Partition tolerance is an important property for modern systems, since network partitions become much more likely if the system is geographically distributed (as many large systems are).【早期系统大多没有考虑P，因此是CA系统，但是现代系统，特别是出现异地多主后，必须考虑分区了】</li>
+<li>Second, that there is a tension between strong consistency and high availability during network partitions. The CAP theorem is an illustration of the tradeoﬀs that occur between strong guarantees and distributed computation.【P既然无法避免，我们只能在C和A之间做选择，有时候我们可以通过降低数据的一致性模型，不再追求强一致，从而达到”CAP”】</li>
+<li>Third, that there is a tension between strong consistency and performance in normal operation.【当一个操作涉及的消息数和节点的数少的时候，延迟自然就低，但是这也意味着有些节点不会被经常访问，意味着数据会是旧数据】</li>
+<li>Fourth - and somewhat indirectly - that if we do not want to give up availability during a network partition, then we need to explore whether consistency models other than strong consistency are workable for our purposes.【有时候3选2可能是误解，我们如果将自己不限制在强一致性模型，我们会有更多的选择】<br>一致性并不是一个一成不变的定义，根据具体场景不同，可以设计出不同的“一致性”。我们要记住：  <blockquote>
+<p>ACID consistency != CAP consistency != Oatmeal consistency</p>
+</blockquote>
+</li>
+</ul>
+<p>一致性模型的概念是：</p>
+<blockquote>
+<p>Consistency model:a contract between programmer and system, wherein the system guarantees that if the programmer follows some speciﬁc rules, the results of operations on the data store will be predictable</p>
+</blockquote>
+<p>一致性模型是编程者和系统之间的契约，只要编程者按照某种规则，那计算机的操作结果就是可预测的。<br>下面介绍一些一致性模型：</p>
+<h1 id="Strong-consistency-vs-other-consistency-models"><a href="#Strong-consistency-vs-other-consistency-models" class="headerlink" title="Strong consistency vs. other consistency models"></a>Strong consistency vs. other consistency models</h1><ul>
+<li>Strong consistency models (capable of maintaining a single copy) <ul>
+<li>Linearizable consistency</li>
+<li>Sequential consistency</li>
+</ul>
+</li>
+<li>Weak consistency models (not strong) <ul>
+<li>Client-centric consistency models</li>
+<li>Causal consistency: strongest model available</li>
+<li>Eventual consistency models<br>一致性模型可以分为两大类：强一致和弱一致。强一致模型给编程者提供的是一个和单机系统一样的模型，而弱一致，则让编程者清楚的意识要是在分布式环境下编程，而不是单机环境。</li>
+</ul>
+</li>
+</ul>
+<h2 id="Strong-consistency-models"><a href="#Strong-consistency-models" class="headerlink" title="Strong consistency models"></a>Strong consistency models</h2><p>强一致性模型可以再细分为两大类：</p>
+<ul>
+<li>Linearizable consistency: Under linearizable consistency, all operations appear to have executed atomically in an order that is consistent with the global real-time ordering of operations. (Herlihy &amp; Wing, 1991)</li>
+<li>Sequential consistency: Under sequential consistency, all operations appear to have executed atomically in some order that is consistent with the order seen at individual nodes and that is equal at all nodes. (Lamport, 1979)<br>两者的最大不同是：linearizable consistency要求操作的结果要和操作实际执行的顺序一致，而Sequential consistency则允许操作实际发生的顺序和操作产生结果的顺序不同，只要每个节点看到的顺序是一样的就行。两者之间的差别基本上可以忽略。</li>
+</ul>
+<h2 id="Client-centric-consistency-models"><a href="#Client-centric-consistency-models" class="headerlink" title="Client-centric consistency models"></a>Client-centric consistency models</h2><p>该一致性模型主要是为了解决下面的情况：客户端进行了某个操作，同时也看到了最新的结果，但是由于网络中断，重新连接到server，此时不能因为重新连接而看到一个旧的结果。</p>
+<h2 id="Eventual-consistency"><a href="#Eventual-consistency" class="headerlink" title="Eventual consistency"></a>Eventual consistency</h2><p>最终一致性我们需要知道两点：</p>
+<ul>
+<li>First, how long is “eventually”? It would be useful to have a strict lower bound, or at least some idea of how long it typically takes for the system to converge to the same value【最终一致，这个最终是多久？我们需要有个下限，或者至少是一个平均值】</li>
+<li>Second, how do the replicas agree on a value? 【多个副本怎么达成一致？】<br>因此，在谈论最终一致的时候，我们需要知道这可能是：”eventually last-writer-wins, and read-the-latest-observed-value in the meantime”</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+	
+	</div>
+
+	<div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/2019/03/06/chapter2/">分布式入门篇（二）</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问 Sworduo 的个人博客">Sworduo</a></p>
+  <p><span>发布时间:</span>2019年03月06日 - 16:03</p>
+  <p><span>最后更新:</span>2019年06月22日 - 19:06</p>
+  <p><span>原始链接:</span><a href="/2019/03/06/chapter2/" title="分布式入门篇（二）">http://sworduo.net/2019/03/06/chapter2/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://sworduo.net/2019/03/06/chapter2/" aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+    });
+    });  
+</script>
+
+      
+	</div>
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>快到碗里来！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.png" alt="Sworduo 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+	
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/分布式/" rel="tag"># 分布式</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/06/chapter1/" rel="next" title="分布式入门篇（一）">
+                <i class="fa fa-chevron-left"></i> 分布式入门篇（一）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/06/chapter3/" rel="prev" title="分布式入门篇（三）">
+                分布式入门篇（三） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+	 
+		<h3> 相关文章：</h3><ul class="related-posts"><li><a href="/2019/03/06/chapter3/">分布式入门篇（三）</a></li><li><a href="/2019/05/22/MIT6-824-LEC04-VMWARE-ft/">MIT6.824-LEC04-VMWARE-ft</a></li><li><a href="/2019/03/06/chapter5/">分布式入门篇（五）</a></li><li><a href="/2019/05/21/MIT6-824-LEC3-GFS/">MIT6.824-LEC3-GFS</a></li><li><a href="/2019/03/10/MapReduce/">MapReduce</a></li><li><a href="/2019/03/06/chapter1/">分布式入门篇（一）</a></li><li><a href="/2019/03/06/chapter0/">分布式入门篇（零）</a></li><li><a href="/2019/05/19/MIT6-824-lab1-MapReduce/">MIT6.824-lab1-MapReduce</a></li><li><a href="/2019/03/06/chapter4/">分布式入门篇（四）</a></li><li><a href="/2019/05/29/MIT6-824-LEC05-Raft/">MIT6.824-LEC05-Raft</a></li></ul> 
+	
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/horse.jpg" alt="Sworduo">
+            
+              <p class="site-author-name" itemprop="name">Sworduo</p>
+              <p class="site-description motion-element" itemprop="description">千里之行，始于足下</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/sworduo" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:sworduo@163.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+		  
+		
+			<div class="links-of-blogroll motion-element links-of-blogroll-block">
+			  <div class="links-of-blogroll-title">
+				<!-- modify icon to fire by szw -->
+				<i class="fa fa-history fa-" aria-hidden="true"></i>
+				近期文章
+			  </div>
+			  <ul class="links-of-blogroll-list">
+				
+				
+				  <li>
+					<a href="/2019/06/21/MIT6-824-lab3-kvservice/" title="MIT6-824-lab3-kvservice" target="_blank">MIT6-824-lab3-kvservice</a>
+				  </li>
+				
+				  <li>
+					<a href="/2019/06/04/MIT6-824-lab2-raft/" title="MIT6.824-lab2-raft" target="_blank">MIT6.824-lab2-raft</a>
+				  </li>
+				
+				  <li>
+					<a href="/2019/05/29/MIT6-824-LEC05-Raft/" title="MIT6.824-LEC05-Raft" target="_blank">MIT6.824-LEC05-Raft</a>
+				  </li>
+				
+				  <li>
+					<a href="/2019/05/22/CSAPP-lab3-Attack/" title="CSAPP-lab3-Attack" target="_blank">CSAPP-lab3-Attack</a>
+				  </li>
+				
+				  <li>
+					<a href="/2019/05/22/MIT6-824-LEC04-VMWARE-ft/" title="MIT6.824-LEC04-VMWARE-ft" target="_blank">MIT6.824-LEC04-VMWARE-ft</a>
+				  </li>
+				
+			  </ul>
+			</div>
+		
+		
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#A-system-model"><span class="nav-number">1.</span> <span class="nav-text">A system model</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Nodes-in-our-system-model"><span class="nav-number">1.1.</span> <span class="nav-text">Nodes in our system model</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Communication-links-in-our-system-model"><span class="nav-number">1.2.</span> <span class="nav-text">Communication links in our system model</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Timing-ordering-assumptions"><span class="nav-number">1.3.</span> <span class="nav-text">Timing / ordering assumptions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-consensus-problem"><span class="nav-number">1.4.</span> <span class="nav-text">The consensus problem</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Two-impossibility-results"><span class="nav-number">2.</span> <span class="nav-text">Two impossibility results</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#The-CAP-theorem"><span class="nav-number">2.1.</span> <span class="nav-text">The CAP theorem</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Strong-consistency-vs-other-consistency-models"><span class="nav-number">3.</span> <span class="nav-text">Strong consistency vs. other consistency models</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Strong-consistency-models"><span class="nav-number">3.1.</span> <span class="nav-text">Strong consistency models</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Client-centric-consistency-models"><span class="nav-number">3.2.</span> <span class="nav-text">Client-centric consistency models</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Eventual-consistency"><span class="nav-number">3.3.</span> <span class="nav-text">Eventual consistency</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart" aria-hidden="true"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sworduo</span>
+
+<!--
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">83.4k</span>
+  
+-->
+</div>
+
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共83.4k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: true,
+        notify: true,
+        appId: 'Ja6j11Iyo36Mmrc5INxiYSIx-gzGzoHsz',
+        appKey: 'v6xwUOCxJcVCwOdrB7ufT9gO',
+        placeholder: 'Come on bro',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Ja6j11Iyo36Mmrc5INxiYSIx-gzGzoHsz", "v6xwUOCxJcVCwOdrB7ufT9gO");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  <!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/love.js"></script>
+<!-- 背景动画 -->
+<script type="text/javascript" src="/js/src/particle.js"></script>
+
+</body>
+</html>

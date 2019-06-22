@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-center-circle.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="分布式,">
+
+
+
+
+
+
+
+
+
+
+<meta name="keywords" content="分布式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式入门篇（三）">
+<meta property="og:url" content="http://sworduo.net/2019/03/06/chapter3/index.html">
+<meta property="og:site_name" content="Sworduo&#39;s Blog">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://sworduo.net/2019/03/06/chapter3/head.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/sworduo/MIT6.824/master/brief%20introduction/pic/chapter3-global-clock.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sworduo/MIT6.824/master/brief%20introduction/pic/chapter3-local-clock.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sworduo/MIT6.824/master/brief%20introduction/pic/chapter3-time.png">
+<meta property="og:updated_time" content="2019-06-22T11:58:11.640Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="分布式入门篇（三）">
+<meta name="twitter:image" content="http://sworduo.net/2019/03/06/chapter3/head.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://sworduo.net/2019/03/06/chapter3/">
+
+
+
+
+
+  <title>分布式入门篇（三） | Sworduo's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sworduo's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://sworduo.net/2019/03/06/chapter3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sworduo">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/horse.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sworduo's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">分布式入门篇（三）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-06T16:16:16+08:00">
+                2019-03-06
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于&#58;</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2019-06-22T19:58:11+08:00">
+                2019-06-22
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/分布式/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/03/06/chapter3/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/06/chapter3/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/03/06/chapter3/" class="leancloud_visitors" data-flag-title="分布式入门篇（三）">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3.4k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  13 min
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <img src="/2019/03/06/chapter3/head.jpg">
+<a id="more"></a>
+<center><font size="6"><a href="http://book.mixu.net/distsys/time.html" target="_blank" rel="noopener">Time and order</a><font></font></font></center>
+
+<pre><code>author:sworduo    date:Feb 27, Wed, 2019
+</code></pre><p><a href="https://www.jianshu.com/p/f0993c83cdf5" target="_blank" rel="noopener">参考</a>:袖珍分布式系统（三）</p>
+<p>首先来看文章提出的第一个问题：</p>
+<blockquote>
+<p>what is order and why is is important?</p>
+</blockquote>
+<p>order可以说是贯穿整个分布式系统的一个基石问题，之前说到，一致性问题是其他高阶算法的基础，同样的，这里的order问题则是一致性问题的基础。还记得分布式系统设计的初衷是什么吗？</p>
+<blockquote>
+<p>the art of solving the same problem that you can solve on a single computer using multiple computers.</p>
+</blockquote>
+<p>我们希望用分布式算法统筹的多机系统表现得和单机系统一样，这就引出了一个非常重要的问题：order。  </p>
+<h2 id="order的重要性"><a href="#order的重要性" class="headerlink" title="order的重要性"></a>order的重要性</h2><p>如果多个节点有了一个统一的order，那么我们可以很方便的给不同节点上的任务标定一个适用于全局的标记，有了这个全局有效的标记，就能控制任务按照我们预设的顺序执行，这样一来多机就真的和单机没什么区别了。这个时候可以很方便的把大部分单机上执行的程序移植到多机系统上，然而这是一个美好的幻想。</p>
+<h2 id="实现order的难点"><a href="#实现order的难点" class="headerlink" title="实现order的难点"></a>实现order的难点</h2><p>我们可以很轻易的在单机上控制任务执行的次序，只要按照任务进来的顺序给定相应的编号，那么我们就能控制任务执行的顺序，甚至能预测任务完成的时间等等。然而同样的问题扩大到分布式系统时就变得十分棘手，因为程序实际的执行顺序你是无法预测的。因为物理等其他原因，每个节点的时钟并不是完全一致的，这种微小偏差对于人类来说几乎可以忽略不计，但是对于ms甚至是ps精度的计算机而言，一点细小的偏差将会导致非常大的错误，日积月累下来将会影响整个系统的运行。<br>解决节点之间的同步有两种思路：</p>
+<ul>
+<li>使用复杂的容错的技术来实现所有节点的时钟同步，然后根据时间戳生成全局有效的先后标识作为任务执行的凭证，从而得到一个全局的total order。这个思路的难点在于，如何在地里位置相隔甚远的情况下，实现一个多机共享的，ms、微秒甚至ps是误差精度的时钟。</li>
+<li>通过communication system，给每个操作编号，从而得到一个顺序。然而这个思路的难点在于，分布式系统中网络通信是不可靠的，您不可能完全确定另一个节点的状态。</li>
+</ul>
+<h1 id="Total-and-partial-order"><a href="#Total-and-partial-order" class="headerlink" title="Total and partial order"></a>Total and partial order</h1><p>在分布式环境中一种常见的状态是partial order。其含义是集合中的任意两个元素不一定可以进行比较。比如说假设A比B高，A也比C高，然而你无法通过比较来确定B和C谁高。针对分布式系统的场景，因为时钟很难真正达到一致，所以分布式网络中每个节点都有其局部时间，所以，假如节点A同时受到节点B和C的消息时，A很难确定B和C的消息究竟谁快谁慢，有可能因为误差累积的原因，B的记录时间大于C，然而实际时间却是小于C，这种情况下，时间的先后只能在单机上比较。<br>那么我们能否在分布式网络中实现一个total order，使得不同节点共享同一个准确的次序呢，很难，因为：</p>
+<blockquote>
+<p>communication is expensive, and time synchronization is diﬃcult and fragile</p>
+</blockquote>
+<h1 id="Time"><a href="#Time" class="headerlink" title="Time"></a>Time</h1><p>从前面的讲述中，其实我们可以意识到，次序是和时间紧密相连的，在单机系统中，因为只存在一个时间，所以次序可以用时间的大小的来进行表示和比较。<br>那么，什么是时间？</p>
+<blockquote>
+<p>Time is a source of order - it allows us to deﬁne the order of operations- which coincidentally also has an interpretation that people can understand (a second, a minute, a day and so on).</p>
+</blockquote>
+<p>时间有时候就像一个计数器，只不过时间这个计数器比较重要，我们用这个计数器产生的数值来定义整个人类的最重要的概念：时间。</p>
+<blockquote>
+<p>Timestamps really are a shorthand value for representing the state of the world from the start of the universe to the current moment - if something occurred at a particular timestamp, then it was potentially inﬂuenced by everything that happened before it.</p>
+</blockquote>
+<p>什么是时间戳（Timestamps），Timestamps定义了世界从初始到现在的状态，如果某件事发生在一个特定的时间点上，是之前影响产生的结果。时间戳的概念可以泛化到因果时钟上，因果时钟认为此时此刻发生的事情和之前发生的事情存在因果关系，所以可以通过当前时刻逆推出之前时刻和此刻有关系的事件，而不仅仅是简单的认为之前发生的所有事情都和此时的事情有关。<br>这个概念基于的前提是：所有的时间都以相同的速率前行着，time and timestampes在程序中应用时，通常有三个解释：</p>
+<ul>
+<li>order</li>
+<li>duration</li>
+<li>interpretation<br>前面提到的”time is a source of order”的含义是：</li>
+<li>we can attach timestamps to unordered events to order them【通过给事件安排一个时间戳，从而给事件排序】</li>
+<li>we can use timestamps to enforce a speciﬁc ordering of operations or the delivery of messages (for example, by delaying an operation if it arrives out of order)【我们可以通过时间戳给操作重新排序】</li>
+<li>we can use the value of a timestamp to determine whether something happened chronologically before something else【通过时间戳知道哪个事件发生在前】<blockquote>
+<p>Interpretation - time as a universally comparable value.<br>时间戳的绝对值解释为日期（date），这是人们非常容易理解并且加以运用的概念。<br>Duration - durations measured in time have some relation to the real world.<br>像算法一般只关心duration，通过duration来判断延迟，一个好的算法都希望能有低延时。</p>
+</blockquote>
+</li>
+</ul>
+<h1 id="Does-time-progress-at-the-same-rate-everywhere"><a href="#Does-time-progress-at-the-same-rate-everywhere" class="headerlink" title="Does time progress at the same rate everywhere?"></a>Does time progress at the same rate everywhere?</h1><p>分布式网络中，各个节点的时间可以以同样的速率前进吗？有三个常见的回答：</p>
+<ul>
+<li>“Global clock”: yes</li>
+<li>“Local clock”: no, but</li>
+<li>“No clock”: no!<br>以上三种看待时间的角度和之前提到的三种系统模型息息相关：</li>
+<li>the synchronous system model has a global clock,</li>
+<li>the partially synchronous model has a local clock, and</li>
+<li>in the asynchronous system model one cannot use clocks at all<br>下面逐一来解释：</li>
+</ul>
+<h2 id="Time-with-a-“global-clock”-assumption"><a href="#Time-with-a-“global-clock”-assumption" class="headerlink" title="Time with a “global-clock” assumption"></a>Time with a “global-clock” assumption</h2><p><img src="https://raw.githubusercontent.com/sworduo/MIT6.824/master/brief%20introduction/pic/chapter3-global-clock.png" alt="global" title="cute"></p>
+<p>当我们认可全局时钟的概念时，等同于我们接受分布式网络各个节点共享同一个非常精确的，几乎没有偏差的时钟的假设，我们从任何时刻任何节点所看到的时间应该基本等同于其他地方其他节点此时此刻的时间，这也是平时生活中我们习以为常的时钟，同样的，正如上面提到一样，我们可以以较大的偏差来接受这个时钟，而分布式网络则以非常严苛的偏差来接受这个时钟。<br>有了global-clock，那么我们可以通过timestamp来生成一个total order，一定程度上可以把此时的分布式系统看成是单机网络，然而维持较大范围内的时钟同步是一件非常困难的事情，我们只能做到一定范围内的同步。（我觉得一般当问题有两种解决思路时，最佳的解决方法就是两种都用，比如小范围内用时钟同步，大范围内用后面提到的vector clock方法，这样可能效果是最好的，没验证，只是章口就莱。）<br>目前，忽略时钟不同步问题做出来的系统有：</p>
+<ul>
+<li>Facebook’s Cassandra:通过时间戳来解决冲突。</li>
+<li>Google’s Spanner:时间戳+偏差范围来定义顺序。</li>
+</ul>
+<h2 id="Time-with-a-“Local-cloak”-assumption"><a href="#Time-with-a-“Local-cloak”-assumption" class="headerlink" title="Time with a “Local-cloak” assumption"></a>Time with a “Local-cloak” assumption</h2><p><img src="https://raw.githubusercontent.com/sworduo/MIT6.824/master/brief%20introduction/pic/chapter3-local-clock.png" alt="local" title="cute"></p>
+<blockquote>
+<p>events on each system are ordered but events cannot be ordered across systems by only using a clock.<br>此时每个节点有各自的时间，因而节点内部的任务可以通过时间戳来排序，但是不同节点上的时间戳不能比较。</p>
+</blockquote>
+<h2 id="Time-with-a-“No-clock”-assumption"><a href="#Time-with-a-“No-clock”-assumption" class="headerlink" title="Time with a “No-clock” assumption"></a>Time with a “No-clock” assumption</h2><p>不在使用时间戳，而是使用counter，通过传递消息来交换counter，从而定义不同机器之间的事件的前后顺序，由于没有时钟的存在，所以无法设定超时等概念。比较有名的论文就是：time, clocks and the ordering of events。</p>
+<h1 id="How-is-time-used-in-a-distributed-system"><a href="#How-is-time-used-in-a-distributed-system" class="headerlink" title="How is time used in a distributed system?"></a>How is time used in a distributed system?</h1><p>时间的好处是：</p>
+<ul>
+<li>Time can deﬁne order across a system (without communication)【时间可以不通过通信而在整个分布式网络中维持一个统一的时钟】</li>
+<li>Time can deﬁne boundary conditions for algorithms【可以定义一些边界条件，比如失败的条件等等】<br>在分布式系统中，定义时间的顺序非常重要，因为：</li>
+<li>where correctness depends on (agreement on) correct event ordering, for example serializability in a distributed database【正确性依赖于事件的顺序】</li>
+<li>order can be used as a tie breaker when resource contention occurs, for example if there are two orders for a widget, fulﬁll the ﬁrst and cancel the second one【当发生资源争用的时候可以用来做裁决】<br>如果我们有全局时钟，就可以不通过通信来确定事物的顺序了，不幸的是，我们一般没有，所以只能通过通信来确定顺序。<br>此外，时间还可以用来区分high latency和server or network link is down.而区分两者的算法就是failure detectors.</li>
+</ul>
+<h2 id="Vector-clocks-time-for-causal-order"><a href="#Vector-clocks-time-for-causal-order" class="headerlink" title="Vector clocks(time for causal order)"></a>Vector clocks(time for causal order)</h2><p>时间之所以重要，是因为我们需要时间来确定事物发生的顺序，然而，我们真正想要的自始至终都是顺序，而不是时间，那么，我们能不能以其他设计为基础来定义事物的顺序呢？还真是有，Lamport clocks和vector clocks是两种替代物理时钟的方法。这两种方法的核心都在于维护一个本地的计数器，然后通过通信来更新计数器，以此来为本地的任务进行标记，而这种标记是可以在全局进行比较的。   </p>
+<h3 id="Lamport-clock"><a href="#Lamport-clock" class="headerlink" title="Lamport clock"></a>Lamport clock</h3><p>Lamport clock里每个节点只维护自身的计数器，其更新规则：</p>
+<ul>
+<li>Whenever a process does work, increment the counter【工作时计数器加一】</li>
+<li>Whenever a process sends a message, include the counter【发送信息时，附上当前记数器额值】</li>
+<li>When a message is received, set the counter to max(local_counter, received_counter) + 1【接收到信息时，更新自身的计数器】<br>然而这种方法有些缺点。比如，两件任务同时在A和B上独立运行，这时候他们之间就很难判断优先级了。再比如A同时收到B和C的信息，若B只与A交互，而C与成百上千台机器交互，那么C的数值将会非常大，这时候如果B和C的任务同时到来，那么A基本上只会执行C的任务，而不会去执行B的任务，即便可能B的任务更加新，然而由于其计数器非常小而可能被认为是旧的任务。（这里我也不是很懂，也是章口就莱）</li>
+</ul>
+<h3 id="Vector-clock"><a href="#Vector-clock" class="headerlink" title="Vector clock"></a>Vector clock</h3><p>vector clock里每个节点维护和它直接通信过的、或者是它知道的其他节点的计数值，比如A知道BCD，那么A和E第一次通信之后，E不仅知道了和它直接通信的A，还知道了A已知的BCD。其更新规则如下：</p>
+<ul>
+<li>Whenever a process does work, increment the logical clock value of the node in the vector【只更新自己的值】</li>
+<li>Whenever a process sends a message, include the full vector of logical clocks【发送整个向量】</li>
+<li>When a message is received:<ul>
+<li>update each element in the vector to be max(local, received)</li>
+<li>increment the logical clock value representing the current node in the vector</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/sworduo/MIT6.824/master/brief%20introduction/pic/chapter3-time.png" alt="time" title="cute"></p>
+<h1 id="Failure-detectors-time-for-cutoff"><a href="#Failure-detectors-time-for-cutoff" class="headerlink" title="Failure detectors(time for cutoff)"></a>Failure detectors(time for cutoff)</h1><p>在分布式环境中，我们怎么知道一个节点已经不可用了呢？我们可以等待一段时间，如果这段时间超过预设的时间阈值，那么就认为对面宕机了。<br>那么，这个时间阈值应该怎么设置？<br>首先这不应该是一个固定的值，因为网络环境和节点之间的延迟千变万化。所以阈值的选择非常灵活。</p>
+<blockquote>
+<p>A failure detector is a way to abstract away the exact timing assumptions. Failure detectors are implemented using heartbeat messages and timers. Processes exchange heartbeat messages. If a message response is not received before the timeout occurs, then the process suspects the other process.</p>
+</blockquote>
+<p>failure detectors有两个重要的属性，每个属性又有两个衍生的概念：</p>
+<ul>
+<li>Strong completeness:Every crashed process is eventually suspected by every correct process.</li>
+<li>Weak completeness:Every crashed process is eventually suspected by some correct process.</li>
+<li>Strong accuracy:No correct process is suspected ever.</li>
+<li>Weak accuracy:Some correct process is never suspected.<br>可以很方便的基于weak completeness来实现strong completeness，只要利用广播就行，所以一般而言，分布式编程的重点在于accuracy.<br>failure detectors是一个非常重要的工具，有了它，我们可以判断一个远程节点是出于高延时状态还是宕机状态。宕机状态的远程节点我们可以不再关注，但是，若远程主机仅仅是处于高延迟状态，那么我们就必须同步，或者是做一些设计中应该要做的事情。  </li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+	
+	</div>
+
+	<div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/2019/03/06/chapter3/">分布式入门篇（三）</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问 Sworduo 的个人博客">Sworduo</a></p>
+  <p><span>发布时间:</span>2019年03月06日 - 16:03</p>
+  <p><span>最后更新:</span>2019年06月22日 - 19:06</p>
+  <p><span>原始链接:</span><a href="/2019/03/06/chapter3/" title="分布式入门篇（三）">http://sworduo.net/2019/03/06/chapter3/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://sworduo.net/2019/03/06/chapter3/" aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+    });
+    });  
+</script>
+
+      
+	</div>
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>快到碗里来！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.png" alt="Sworduo 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+	
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/分布式/" rel="tag"># 分布式</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/06/chapter2/" rel="next" title="分布式入门篇（二）">
+                <i class="fa fa-chevron-left"></i> 分布式入门篇（二）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/06/chapter4/" rel="prev" title="分布式入门篇（四）">
+                分布式入门篇（四） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+	 
+		<h3> 相关文章：</h3><ul class="related-posts"><li><a href="/2019/05/19/MIT6-824-lab1-MapReduce/">MIT6.824-lab1-MapReduce</a></li><li><a href="/2019/05/22/MIT6-824-LEC04-VMWARE-ft/">MIT6.824-LEC04-VMWARE-ft</a></li><li><a href="/2019/03/06/chapter5/">分布式入门篇（五）</a></li><li><a href="/2019/05/21/MIT6-824-LEC3-GFS/">MIT6.824-LEC3-GFS</a></li><li><a href="/2019/03/10/MapReduce/">MapReduce</a></li><li><a href="/2019/03/06/chapter1/">分布式入门篇（一）</a></li><li><a href="/2019/03/06/chapter0/">分布式入门篇（零）</a></li><li><a href="/2019/03/06/chapter2/">分布式入门篇（二）</a></li><li><a href="/2019/03/06/chapter4/">分布式入门篇（四）</a></li><li><a href="/2019/05/29/MIT6-824-LEC05-Raft/">MIT6.824-LEC05-Raft</a></li></ul> 
+	
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/horse.jpg" alt="Sworduo">
+            
+              <p class="site-author-name" itemprop="name">Sworduo</p>
+              <p class="site-description motion-element" itemprop="description">千里之行，始于足下</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/sworduo" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:sworduo@163.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+		  
+		
+			<div class="links-of-blogroll motion-element links-of-blogroll-block">
+			  <div class="links-of-blogroll-title">
+				<!-- modify icon to fire by szw -->
+				<i class="fa fa-history fa-" aria-hidden="true"></i>
+				近期文章
+			  </div>
+			  <ul class="links-of-blogroll-list">
+				
+				
+				  <li>
+					<a href="/2019/06/21/MIT6-824-lab3-kvservice/" title="MIT6-824-lab3-kvservice" target="_blank">MIT6-824-lab3-kvservice</a>
+				  </li>
+				
+				  <li>
+					<a href="/2019/06/04/MIT6-824-lab2-raft/" title="MIT6.824-lab2-raft" target="_blank">MIT6.824-lab2-raft</a>
+				  </li>
+				
+				  <li>
+					<a href="/2019/05/29/MIT6-824-LEC05-Raft/" title="MIT6.824-LEC05-Raft" target="_blank">MIT6.824-LEC05-Raft</a>
+				  </li>
+				
+				  <li>
+					<a href="/2019/05/22/CSAPP-lab3-Attack/" title="CSAPP-lab3-Attack" target="_blank">CSAPP-lab3-Attack</a>
+				  </li>
+				
+				  <li>
+					<a href="/2019/05/22/MIT6-824-LEC04-VMWARE-ft/" title="MIT6.824-LEC04-VMWARE-ft" target="_blank">MIT6.824-LEC04-VMWARE-ft</a>
+				  </li>
+				
+			  </ul>
+			</div>
+		
+		
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#order的重要性"><span class="nav-number">1.</span> <span class="nav-text">order的重要性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现order的难点"><span class="nav-number">2.</span> <span class="nav-text">实现order的难点</span></a></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#Total-and-partial-order"><span class="nav-number"></span> <span class="nav-text">Total and partial order</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Time"><span class="nav-number"></span> <span class="nav-text">Time</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Does-time-progress-at-the-same-rate-everywhere"><span class="nav-number"></span> <span class="nav-text">Does time progress at the same rate everywhere?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Time-with-a-“global-clock”-assumption"><span class="nav-number">1.</span> <span class="nav-text">Time with a “global-clock” assumption</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Time-with-a-“Local-cloak”-assumption"><span class="nav-number">2.</span> <span class="nav-text">Time with a “Local-cloak” assumption</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Time-with-a-“No-clock”-assumption"><span class="nav-number">3.</span> <span class="nav-text">Time with a “No-clock” assumption</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#How-is-time-used-in-a-distributed-system"><span class="nav-number"></span> <span class="nav-text">How is time used in a distributed system?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Vector-clocks-time-for-causal-order"><span class="nav-number">1.</span> <span class="nav-text">Vector clocks(time for causal order)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Lamport-clock"><span class="nav-number">1.1.</span> <span class="nav-text">Lamport clock</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Vector-clock"><span class="nav-number">1.2.</span> <span class="nav-text">Vector clock</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Failure-detectors-time-for-cutoff"><span class="nav-number"></span> <span class="nav-text">Failure detectors(time for cutoff)</span></a></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart" aria-hidden="true"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sworduo</span>
+
+<!--
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">83.4k</span>
+  
+-->
+</div>
+
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共83.4k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: true,
+        notify: true,
+        appId: 'Ja6j11Iyo36Mmrc5INxiYSIx-gzGzoHsz',
+        appKey: 'v6xwUOCxJcVCwOdrB7ufT9gO',
+        placeholder: 'Come on bro',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Ja6j11Iyo36Mmrc5INxiYSIx-gzGzoHsz", "v6xwUOCxJcVCwOdrB7ufT9gO");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  <!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/love.js"></script>
+<!-- 背景动画 -->
+<script type="text/javascript" src="/js/src/particle.js"></script>
+
+</body>
+</html>

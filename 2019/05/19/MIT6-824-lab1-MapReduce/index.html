@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-center-circle.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="分布式,MIT6.824,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="&amp;emsp;&amp;emsp;MIT6.824是一门非常出名的分布式课程，在这门课里，我们能了解到分布式系统的前生今世，领略一种种令人拍案叫绝的算法，顺便学一下人际管理，有人戏称，分布式系统是一门在你有多个女朋友并且她们都相互认识的情况下，将她们妥善安置的学问，细细一想，觉得很有道理，然而真学完这门课估计就找不到女朋友了，因为那时候已经秃头了…  言归正传，我刚上完前两节课程（其实就是看了一篇mapr">
+<meta name="keywords" content="分布式,MIT6.824">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MIT6.824-lab1-MapReduce">
+<meta property="og:url" content="http://sworduo.net/2019/05/19/MIT6-824-lab1-MapReduce/index.html">
+<meta property="og:site_name" content="Sworduo&#39;s Blog">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;MIT6.824是一门非常出名的分布式课程，在这门课里，我们能了解到分布式系统的前生今世，领略一种种令人拍案叫绝的算法，顺便学一下人际管理，有人戏称，分布式系统是一门在你有多个女朋友并且她们都相互认识的情况下，将她们妥善安置的学问，细细一想，觉得很有道理，然而真学完这门课估计就找不到女朋友了，因为那时候已经秃头了…  言归正传，我刚上完前两节课程（其实就是看了一篇mapr">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://sworduo.net/2019/05/19/MIT6-824-lab1-MapReduce/head.jpg">
+<meta property="og:updated_time" content="2019-06-22T11:58:11.615Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MIT6.824-lab1-MapReduce">
+<meta name="twitter:description" content="&amp;emsp;&amp;emsp;MIT6.824是一门非常出名的分布式课程，在这门课里，我们能了解到分布式系统的前生今世，领略一种种令人拍案叫绝的算法，顺便学一下人际管理，有人戏称，分布式系统是一门在你有多个女朋友并且她们都相互认识的情况下，将她们妥善安置的学问，细细一想，觉得很有道理，然而真学完这门课估计就找不到女朋友了，因为那时候已经秃头了…  言归正传，我刚上完前两节课程（其实就是看了一篇mapr">
+<meta name="twitter:image" content="http://sworduo.net/2019/05/19/MIT6-824-lab1-MapReduce/head.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://sworduo.net/2019/05/19/MIT6-824-lab1-MapReduce/">
+
+
+
+
+
+  <title>MIT6.824-lab1-MapReduce | Sworduo's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sworduo's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://sworduo.net/2019/05/19/MIT6-824-lab1-MapReduce/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sworduo">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/horse.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sworduo's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">MIT6.824-lab1-MapReduce</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-19T00:09:39+08:00">
+                2019-05-19
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于&#58;</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2019-06-22T19:58:11+08:00">
+                2019-06-22
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/分布式/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/分布式/MIT/" itemprop="url" rel="index">
+                    <span itemprop="name">MIT</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/05/19/MIT6-824-lab1-MapReduce/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/19/MIT6-824-lab1-MapReduce/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/05/19/MIT6-824-lab1-MapReduce/" class="leancloud_visitors" data-flag-title="MIT6.824-lab1-MapReduce">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  5.2k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  20 min
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <img src="/2019/05/19/MIT6-824-lab1-MapReduce/head.jpg">
+<p>&emsp;&emsp;MIT6.824是一门非常出名的分布式课程，在这门课里，我们能了解到分布式系统的前生今世，领略一种种令人拍案叫绝的算法，顺便学一下人际管理，有人戏称，分布式系统是一门在你有多个女朋友并且她们都相互认识的情况下，将她们妥善安置的学问，细细一想，觉得很有道理，然而真学完这门课估计就找不到女朋友了，因为那时候已经秃头了…  言归正传，我刚上完前两节课程（其实就是看了一篇mapreduce论文和go语言入门），就来做lab1了，收获良多，下面分享一下我做lab1时的一些认识和想法。 lab1要求使用Go语言实现mapreduce，包括任务安排、节点调度以及map和reduce的操作和相互之间的配合。事实上，大部分代码已经写好了，我们只需要完成核心的代码就可以了。但是我还是建议大家看看其他的代码，从中可以学到许多东西。包括但不限于如何将问题拆分为几个小问题，如何构建一个微型服务器，如何去在客户和服务之间交互，如何设计相关的数据结构和服务，这些都能在6.824/src/mapreduce/*.go文件里找到。<br><a id="more"></a></p>
+<h1 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h1><p>在mapreduce框架下，执行一个job可以大致分为以下几个过程：</p>
+<ol>
+<li>由用户确定输入文件的数量，map和reduce函数，以及reduce任务的数量(nReduce)。</li>
+<li>序会自动创建一个master节点。master节点首先会开启一个RPC服务器(在master_rpc.go里），然后等待worker注册（使用rpc call Register()，定义在master.go里）。当任务来临时，master决定如何将任务分配给workers，以及如何处理workers failures的情况（schedule()定义在schedule.go里）。</li>
+<li>master将一个输入文件看成是一个map任务，并且给每个map任务至少调用一次doMap()（在common_map.go里）。这时候有两种情况，当模式选择的是sequential()时，master节点直接进行map任务；如果使用分布式的模式，那么master节点会通过DoTask的RPC调用将任务分派给workers(在works.go）。每一个对doMap()的调用都会自动读取相应文件，并且对文件里的数据进行预先定义好的map操作，并且最终的key/value结果存放在workers本地的nReduce中间文件中。doMap()会对任务进行hash以决定对应的reduce中间文件。所以一次任务一共会产生nMap*nReduce个中间文件（每个map节点创建nReduce个中间文件）。每个文件名字会包含一个前缀，其中包括map任务的编号，以及reduce任务的编号。例如，如果有两个map任务和3个reduce任务，那么将会创建6个中间文件（一般情况下是reduce节点少于map节点）。<blockquote>
+<p>mrtmp.xxx-0-0<br>mrtmp.xxx-0-1<br>mrtmp.xxx-0-2<br>mrtmp.xxx-1-0<br>mrtmp.xxx-1-1<br>mrtmp.xxx-1-2  </p>
+</blockquote>
+</li>
+<li>当map节点完成任务并且生成了nReduce个中间文件后，master会给每个reduce任务至少调用一次doReduce()(在common_reduce.go里）函数。同样的，和doMap()一样，会根据sequentil模式和分布式模式里决定直接在master节点运行或者是分配到reduce节点运行。doReduce()会控制第r个reduce节点读取所有map节点的第r个中间文件，并且对读取到的数据进行定义好的reduce操作。最终，一共会产生nReduce个输出文件。</li>
+<li>在所有reduce都完成任务之后，master节点会调用mr.merge()(在master_splitmerge.go里）合并nReduce个输出文件。</li>
+<li><p>最后master节点发送shutdown RPC命令给每一个在master这里注册的worker让他们关机，然后关闭master节点中的RPC 服务器。  </p>
+<p>注：这个实验只需要改写doMap,doReduce和schedule三个函数，他们分别在common_map.go,common_reduce.go和schedule.go三个文件中。同样的，你需要在../main/wc.go里定义map和reduce函数。你不需要去改动其他函数，但是阅读其他函数有助于帮助你理解代码逻辑，加深对整个系统架构的理解。</p>
+</li>
+</ol>
+<h1 id="Part1-实现map和reduce节点的核心代码"><a href="#Part1-实现map和reduce节点的核心代码" class="headerlink" title="Part1-实现map和reduce节点的核心代码"></a>Part1-实现map和reduce节点的核心代码</h1><p>map节点和reduce节点的核心代码并不是实现map函数和reduce函数，后两者是用户提供的。<br>map节点具体的核心代码如下：</p>
+<ol>
+<li>读取需要处理的文件。</li>
+<li>对读取内容调用客户定义好的map函数。</li>
+<li>将map结果输出为nReduce个中间文件，方便reduce节点获取。（用hash函数来确定哪些结果应该存放到那个中间文件中，这样一来不同map节点的相同数据就能映射到同一个reduce节点里处理）  </li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">doMap</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">	jobName <span class="keyword">string</span>, // the name of the MapReduce job</span></span></span><br><span class="line"><span class="function"><span class="params">	mapTask <span class="keyword">int</span>, // which <span class="keyword">map</span> task this is</span></span></span><br><span class="line"><span class="function"><span class="params">	inFile <span class="keyword">string</span>,</span></span></span><br><span class="line">	nReduce int, // the number of reduce task that will be run ("R" in the paper)</span><br><span class="line">	mapF <span class="function"><span class="keyword">func</span><span class="params">(filename <span class="keyword">string</span>, contents <span class="keyword">string</span>)</span> []<span class="title">KeyValue</span>,</span></span><br><span class="line"><span class="function">)</span> &#123;</span><br><span class="line">	<span class="comment">//读入文件中的数据</span></span><br><span class="line">	<span class="comment">//此处应有处理读取失败的处理，不过刚学go，不太熟悉，就不检查了。</span></span><br><span class="line">	fileContent, _ := ioutil.ReadFile(inFile)</span><br><span class="line">	KVpairs := mapF(inFile, <span class="keyword">string</span>(fileContent))</span><br><span class="line"></span><br><span class="line">	<span class="comment">//保存到本地，两个问题</span></span><br><span class="line">	<span class="comment">//第一，需要知道保存的文件名</span></span><br><span class="line">	<span class="comment">//文件名可以通过reduceName(jobName, mapTask, r)获得</span></span><br><span class="line">	<span class="comment">//第二，关键是以什么样的格式保存到本地</span></span><br><span class="line">	<span class="comment">//上面有提示，虽然不需要使用json格式保存到本地，但是因为reduce输出的是json</span></span><br><span class="line">	<span class="comment">//所以这里也使用json格式熟悉一下。</span></span><br><span class="line"></span><br><span class="line">	mapFiles := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]*json.Encoder)</span><br><span class="line">	<span class="keyword">for</span> n:=<span class="number">0</span>; n &lt; nReduce; n++&#123;</span><br><span class="line">		filename := reduceName(jobName, mapTask, n)</span><br><span class="line">		file, _ := os.Create(filename)</span><br><span class="line">		<span class="comment">//return之后才进行defer之后的语句</span></span><br><span class="line">		<span class="keyword">defer</span> file.Close()</span><br><span class="line">		mapFiles[filename] = json.NewEncoder(file)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> _, kv := <span class="keyword">range</span> KVpairs &#123;</span><br><span class="line">		kvfile := reduceName(jobName, mapTask, ihash(kv.Key)%nReduce)</span><br><span class="line">		mapFiles[kvfile].Encode(&amp;kv)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>reduce节点的工作流程：</p>
+<ol>
+<li>从<strong>所有</strong>map节点中读取属于自己的中间文件。</li>
+<li>对本节点的key值进行排序，方便后续处理。</li>
+<li>对每一个key值调用客户定义好的reduce函数。</li>
+<li>将结果输出到共享文件系统。  </li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">doReduce</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">	jobName <span class="keyword">string</span>, // the name of the whole MapReduce job</span></span></span><br><span class="line"><span class="function"><span class="params">	reduceTask <span class="keyword">int</span>, // which reduce task this is</span></span></span><br><span class="line"><span class="function"><span class="params">	outFile <span class="keyword">string</span>, // write the output here</span></span></span><br><span class="line">	nMap int, // the number of map tasks that were run ("M" in the paper)</span><br><span class="line">	reduceF <span class="function"><span class="keyword">func</span><span class="params">(key <span class="keyword">string</span>, values []<span class="keyword">string</span>)</span> <span class="title">string</span>,</span></span><br><span class="line"><span class="function">)</span> &#123;</span><br><span class="line">	<span class="comment">//string:[]string =&gt; key值:对应的value数组</span></span><br><span class="line">	kStingPairs := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>][]<span class="keyword">string</span>)</span><br><span class="line">	<span class="comment">//每个key值保存一次</span></span><br><span class="line">	keySlice := <span class="built_in">make</span>([]<span class="keyword">string</span>, <span class="number">0</span>)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//读取m个map节点对应的中间文件</span></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; nMap; i++&#123;</span><br><span class="line">		file, _ := os.Open(reduceName(jobName, i, reduceTask))</span><br><span class="line">		enc := json.NewDecoder(file)</span><br><span class="line">		<span class="keyword">for</span> &#123;</span><br><span class="line">			<span class="keyword">var</span> kv KeyValue</span><br><span class="line">			err := enc.Decode(&amp;kv)</span><br><span class="line">			<span class="keyword">if</span> err != <span class="literal">nil</span>&#123;</span><br><span class="line">				<span class="keyword">break</span></span><br><span class="line">			&#125;</span><br><span class="line">			_, ok := kStingPairs[kv.Key]</span><br><span class="line">			<span class="keyword">if</span> !ok&#123;</span><br><span class="line">				<span class="comment">//如果字符串是第一次遍历，那么初始化其切片。</span></span><br><span class="line">				<span class="comment">//切片append前需要初始化</span></span><br><span class="line">				kStingPairs[kv.Key] = <span class="built_in">make</span>([]<span class="keyword">string</span>, <span class="number">0</span>)</span><br><span class="line">				keySlice = <span class="built_in">append</span>(keySlice, kv.Key)</span><br><span class="line">			&#125;</span><br><span class="line">			kStingPairs[kv.Key] = <span class="built_in">append</span>(kStingPairs[kv.Key], kv.Value)</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//也可以在之前defer file.Close()</span></span><br><span class="line">		<span class="comment">//不过defer是return时才执行，我想早点关闭文件。</span></span><br><span class="line">		file.Close()</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//对key值排序，使得输出是有序的</span></span><br><span class="line">	sort.Strings(keySlice)</span><br><span class="line">	mergeSlice := <span class="built_in">make</span>([]KeyValue, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">//对每个key进行reduce操作</span></span><br><span class="line">	<span class="keyword">for</span> _, key := <span class="keyword">range</span> keySlice&#123;</span><br><span class="line">		res := reduceF(key, kStingPairs[key])</span><br><span class="line">		mergeSlice = <span class="built_in">append</span>(mergeSlice, KeyValue&#123;key, res&#125;)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//存结果</span></span><br><span class="line">	file, _ := os.Create(outFile)</span><br><span class="line">	<span class="keyword">defer</span> file.Close()</span><br><span class="line">	env := json.NewEncoder(file)</span><br><span class="line">	<span class="keyword">for</span> _, kv := <span class="keyword">range</span> mergeSlice&#123;</span><br><span class="line">		env.Encode(&amp;kv)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="Part2-实现简单的字频统计"><a href="#Part2-实现简单的字频统计" class="headerlink" title="Part2-实现简单的字频统计"></a>Part2-实现简单的字频统计</h1><p>没什么好说的，根据提示查一下go如何切分字符串即可。  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">mapF</span><span class="params">(filename <span class="keyword">string</span>, contents <span class="keyword">string</span>)</span> []<span class="title">mapreduce</span>.<span class="title">KeyValue</span></span> &#123;</span><br><span class="line">	<span class="comment">// Your code here (Part II).</span></span><br><span class="line">	kvpairs := <span class="built_in">make</span>([]mapreduce.KeyValue, <span class="number">0</span>)</span><br><span class="line">	f := <span class="function"><span class="keyword">func</span><span class="params">(r <span class="keyword">rune</span>)</span><span class="title">bool</span></span>&#123;</span><br><span class="line">		<span class="keyword">return</span> !unicode.IsLetter(r) &amp;&amp; !unicode.IsNumber(r)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//https://golang.org/pkg/strings/#FieldsFunc</span></span><br><span class="line">	<span class="comment">//将满足string中满足f的去掉，并且以满足f的作为两个word之间的分割线</span></span><br><span class="line">	words := strings.FieldsFunc(contents, f)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> _, word := <span class="keyword">range</span> words&#123;</span><br><span class="line">		kvpairs = <span class="built_in">append</span>(kvpairs, mapreduce.KeyValue&#123;word, strconv.Itoa(<span class="number">1</span>)&#125;)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> kvpairs</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">reduceF</span><span class="params">(key <span class="keyword">string</span>, values []<span class="keyword">string</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="comment">// Your code here (Part II).</span></span><br><span class="line">	res := <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> _, val := <span class="keyword">range</span> values&#123;</span><br><span class="line">		valInt, _ := strconv.Atoi(val)</span><br><span class="line">		res = res + valInt</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> strconv.Itoa(res)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="Part3-amp-4分布式容错执行mapreduce"><a href="#Part3-amp-4分布式容错执行mapreduce" class="headerlink" title="Part3&amp;4分布式容错执行mapreduce"></a>Part3&amp;4分布式容错执行mapreduce</h1><h2 id="相关背景"><a href="#相关背景" class="headerlink" title="相关背景"></a>相关背景</h2><p>part3&amp;4才是这一个lab的精髓，要求使用RPC通信，调用多个节点执行map操作和reduce操作，难度较大，特别是并行操作环境下有些bug不好找。  </p>
+<p>&emsp;&emsp;part3需要在master建立服务，然后在每一个worker节点也建立服务，对于master节点而言，worker节点是客户；对于worker而言，master节点是客户。要想多节点调度实现mapreduce,首先要做的，就是在master和每个worker节点建立相应的服务器，用来协调流程，发送指令，传递数据。  </p>
+<blockquote>
+<p>之前一直以为map节点和reduce节点是两套不同的服务器代码，完成了part3之后我才明白，原来节点的框架代码都是一样的。具体来说，工作节点（不管是map节点还是reduce节点）中负责与master节点交互的部分被抽象出来单独写成一套代码，map/reduce节点只是worker节点执行的任务不同，换句话说，执行map操作的工作节点就叫map节点，执行reduce操作的工作节点就叫reduce节点。如此一来，一个工作节点可能之前是map节点，后面就可以变成reduce节点，大大提升了利用率，是我之前狭隘了。<br>首先我们思考一下，客户连接服务器需要哪些信息？第一，当然是得知道服务器的地址；第二，是你所需要调用的服务，在这里也就是要调用的函数；第三，客户提供调用函数所需要的参数；第四，怎么获取服务器的返回信息。  </p>
+</blockquote>
+<p>&emsp;&emsp;相应的，要建立服务器，首先要确定一个地址，其次要确定本服务器所能提供的服务（也就是函数），最后还要确定如何与客户进行信息交互。<br>&emsp;&emsp;以上这些都能在master.go和worker.go里面找到，其实只要解决以上几个问题，一个服务器就建立起来了。 </p>
+<h2 id="认识问题"><a href="#认识问题" class="headerlink" title="认识问题"></a>认识问题</h2><p>回到mapreduce，我们可以从功能上将mapreduce拆解为以下几个节点：</p>
+<ol>
+<li>map节点部分：包括读取相应文件，进行map操作，存储中间文件。</li>
+<li>reduce节点部分：包括在所有map节点读取相关文件，进行reduce操作，然后合并输出一个文件。</li>
+<li>master节点部分：负责分发任务、统筹节点、生成最后的输出结果。</li>
+</ol>
+<p>同样的，从任务交互角度出发，程序可以拆分为以下几点：</p>
+<ol>
+<li>任务调度：如何将任务分发给相应的节点，以及如何调度不同的工作节点。</li>
+<li>状态通知：如何得知各个节点的状态，如何得知节点准备就绪，如何得知任务已经完成。</li>
+<li>错误恢复：如果在执行任务时有节点加入如何处理，如果在执行任务时节点失联如何处理，master、map、reduce在处理方式上有什么不同。  </li>
+</ol>
+<p>认识到上面几个问题，就能对整个系统有一个宏观的理解和把控。</p>
+<h2 id="了解程序"><a href="#了解程序" class="headerlink" title="了解程序"></a>了解程序</h2><p>通过通读其他代码，我们对程序的运行环境有如下认识：</p>
+<ol>
+<li>整个程序是建立在所有节点都运行在一个共享文件系统上的。所以不同节点之间不需要传送文件信息，而只需要传递需要处理的文件名，map和reduce节点通过这个文件名获取相应的数据。所以系统内部只需要传递指令，这些指令由worker和master节点提供的函数构成。</li>
+<li>在schedule.go中，描述了master节点和worker节点之间交互的代码，包括建立连接，调用对方的函数，更改变量值，传递指令，结束连接。maste和worker之间通过call来联系，call的第一个参数就是需要联系的服务器名称或者是服务器上需要调用的函数。</li>
+<li>正常情况下，worker节点只会注册一次，然后直到接受master的指令才会shutdown，自始至终只会发送一次注册信息，当然如果是节点坏了另说。</li>
+</ol>
+<h2 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h2><p>part3&amp;4主要是将多个文件分发到多个节点上，并且要求并行处理。既然是并行处理，那当然是要用goroutine了。这样我们需要解决几个问题：</p>
+<ol>
+<li><p>如何知道哪些节点可用？  </p>
+<p>答：程序中有registerChan管道，专门用来通知可用的节点。</p>
+</li>
+<li><p>如果输入文件大于worker节点数量，也即是一个worker节点可能需要前后运行多个任务，然而worker节点只会注册一次，调度程序如何得知worker已经完成之前的任务了？</p>
+<p>答：worker完成本轮任务后，将本worker再放到registerChan管道里即可，再注册一次。</p>
+</li>
+<li><p>如果因为节点失效导致任务执行失败怎么办？</p>
+<p>答：两种方法，第一个方法是维护一个失败任务的列表（我一开始的想法），运行完一轮后，接着重新运行失败的任务，无限循环，直到任务全部执行成功为止；第二个方法，在开的每个goroutine里执行死循环，直到任务执行成功才跳出（网上的办法，确实是好很多，并且不用加锁）。</p>
+</li>
+</ol>
+<p>以上就是part3&amp;4的核心问题，解决了这几个问题，schedule也就解决了。  </p>
+<h2 id="程序思路"><a href="#程序思路" class="headerlink" title="程序思路"></a>程序思路</h2><p>总的来说，part3&amp;4的思路是这样的：</p>
+<ol>
+<li>通过registerChan获取可用的worker节点</li>
+<li>通过call()函数给可用的worker节点分发任务</li>
+<li>处理失败的任务</li>
+<li>使用Sync.WaitGroup等待所有goroutine完成  </li>
+</ol>
+<p>第一种方法：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//=========================================================================================================================</span></span><br><span class="line"><span class="comment">//统计执行失败的任务编号，在下一个循环中继续执行，直到所有任务都执行完毕。</span></span><br><span class="line"><span class="comment">//=========================================================================================================================</span></span><br><span class="line"><span class="comment">// All ntasks tasks have to be scheduled on workers. Once all tasks</span></span><br><span class="line"><span class="comment">// have completed successfully, schedule() should return.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Your code here (Part III, Part IV).</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//var wg sync.WaitGroup //等待所有goroutine完成</span></span><br><span class="line"><span class="comment">//var taskMutex sync.Mutex //控制失败任务的锁</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">////toDoTaskNumber记录需要完成的任务编号</span></span><br><span class="line"><span class="comment">//toDoTaskNumber := make([]int, ntasks)</span></span><br><span class="line"><span class="comment">//for i := 0; i &lt; ntasks; i++&#123;</span></span><br><span class="line"><span class="comment">//	toDoTaskNumber = append(toDoTaskNumber, i)</span></span><br><span class="line"><span class="comment">//&#125;</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//for &#123;</span></span><br><span class="line"><span class="comment">//	//toDoTaskNumber：每次要完成任务的编号</span></span><br><span class="line"><span class="comment">//	//failedTasksNumber：保存失败任务的编号，下一次完成</span></span><br><span class="line"><span class="comment">//	failedTasksNumber := make([]int, 0)</span></span><br><span class="line"><span class="comment">//	for _, taskNumber := range toDoTaskNumber &#123;</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//		//注意worker节点只会在一开始注册一次！</span></span><br><span class="line"><span class="comment">//		//当goroutine完成时，再次通过registerchan注册可用节点</span></span><br><span class="line"><span class="comment">//		curWork := &lt;-registerChan</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//		wg.Add(1)</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//		var task string</span></span><br><span class="line"><span class="comment">//		if phase == reducePhase&#123;</span></span><br><span class="line"><span class="comment">//			task = ""</span></span><br><span class="line"><span class="comment">//		&#125;else&#123;</span></span><br><span class="line"><span class="comment">//			task = mapFiles[taskNumber]</span></span><br><span class="line"><span class="comment">//		&#125;</span></span><br><span class="line"><span class="comment">//		//分配任务</span></span><br><span class="line"><span class="comment">//		//这里必须以函数调用方式传递参数，否则go里面的变量会绑定为taskNumber和task本身，而不是其遍历的值，最后的结果就是多个goroutine运行同一个任务</span></span><br><span class="line"><span class="comment">//		go func(curWorker string, taskNum int, task string) &#123;</span></span><br><span class="line"><span class="comment">//			defer wg.Done()</span></span><br><span class="line"><span class="comment">//			ok := call(curWorker, "Worker.DoTask", DoTaskArgs&#123;jobName, task, phase, taskNum, n_other&#125;, nil)</span></span><br><span class="line"><span class="comment">//			if !ok &#123;</span></span><br><span class="line"><span class="comment">//				fmt.Printf("%s phase #%d task failed in %s", phase, taskNum, curWorker)</span></span><br><span class="line"><span class="comment">//				taskMutex.Lock()</span></span><br><span class="line"><span class="comment">//				failedTasksNumber = append(failedTasksNumber, taskNum)</span></span><br><span class="line"><span class="comment">//				taskMutex.Unlock()</span></span><br><span class="line"><span class="comment">//			&#125; else &#123;</span></span><br><span class="line"><span class="comment">//				//仅仅写registerChan &lt;- curWorker，最后的几个chan会堵塞，因为主程序已经结束了，管道另一边无法接收数据。</span></span><br><span class="line"><span class="comment">//				//所以另开一个goroutine防止堵塞</span></span><br><span class="line"><span class="comment">//				go func() &#123; registerChan &lt;- curWorker &#125;()</span></span><br><span class="line"><span class="comment">//			&#125;</span></span><br><span class="line"><span class="comment">//		&#125;(curWork, taskNumber, task)</span></span><br><span class="line"><span class="comment">//	&#125;</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//	wg.Wait()</span></span><br><span class="line"><span class="comment">//	remain := len(failedTasksNumber)</span></span><br><span class="line"><span class="comment">//	fmt.Printf("#%d tasks failed, total: %d\n", remain, ntasks)</span></span><br><span class="line"><span class="comment">//	//所有工作都成功</span></span><br><span class="line"><span class="comment">//	if remain == 0 &#123;</span></span><br><span class="line"><span class="comment">//		break</span></span><br><span class="line"><span class="comment">//	&#125;</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//	//继续完成未完成的工作</span></span><br><span class="line"><span class="comment">//	toDoTaskNumber = toDoTaskNumber[:remain]</span></span><br><span class="line"><span class="comment">//	copy(toDoTaskNumber, failedTasksNumber)</span></span><br><span class="line"><span class="comment">//	&#125;</span></span><br></pre></td></tr></table></figure></p>
+<p>第二种方法：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//=========================================================================================================================</span></span><br><span class="line"><span class="comment">//网上的做法</span></span><br><span class="line"><span class="comment">//在执行任务的goroutine里死循环，直到任务执行完为止</span></span><br><span class="line"><span class="comment">//=========================================================================================================================</span></span><br><span class="line"><span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line"><span class="keyword">for</span> taskNumber := <span class="number">0</span>; taskNumber &lt; ntasks; taskNumber++&#123;</span><br><span class="line">	<span class="keyword">var</span> task <span class="keyword">string</span></span><br><span class="line">	<span class="keyword">if</span> phase == mapPhase&#123;</span><br><span class="line">		task = mapFiles[taskNumber]</span><br><span class="line">	&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">		task = <span class="string">""</span></span><br><span class="line">	&#125;</span><br><span class="line">	taskArgs := DoTaskArgs&#123;jobName, task, phase, taskNumber, n_other&#125;</span><br><span class="line"></span><br><span class="line">	wg.Add(<span class="number">1</span>)</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(taskArg DoTaskArgs)</span></span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> wg.Done()</span><br><span class="line">		<span class="keyword">for</span>&#123;</span><br><span class="line">			worker := &lt;- registerChan</span><br><span class="line">			ok := call(worker, <span class="string">"Worker.DoTask"</span>, taskArgs, <span class="literal">nil</span>)</span><br><span class="line">			<span class="keyword">if</span> ok&#123;</span><br><span class="line">				<span class="comment">//开goroutine防止最后几个执行任务的协程阻塞（因为已经没有其他协程接收管道了）</span></span><br><span class="line">				<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">					registerChan &lt;- worker</span><br><span class="line">				&#125;()</span><br><span class="line">				<span class="keyword">break</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;(taskArgs)</span><br><span class="line">&#125;</span><br><span class="line">wg.Wait()</span><br></pre></td></tr></table></figure></p>
+<h2 id="坑"><a href="#坑" class="headerlink" title="坑"></a>坑</h2><p>做的时候遇到了几个坑，分享一下。</p>
+<ol>
+<li>在part3 test的时候，会提示缺少pbservice,viewservice等包，这是前几年大作业用到的包，现在（似乎）没有用了。进入6.824/src/main,将diskvd.go,pbc.go,pbd.go,viewd.go删除，或者移到其他文件夹就好。（至少移除后lab1可以正常操作，lab2以后需不需要暂时未知）</li>
+<li>假设有这么一段程序<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Var wg sync.waitgroup</span><br><span class="line">For xxx&#123;</span><br><span class="line">	Reg := &lt;- <span class="keyword">chan</span></span><br><span class="line">	Wg.add(<span class="number">1</span>)</span><br><span class="line">	Go <span class="function"><span class="keyword">func</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="keyword">defer</span> wg.done()</span><br><span class="line">		<span class="comment">//do something</span></span><br><span class="line">		Chan &lt;- good</span><br><span class="line">	&#125;()</span><br><span class="line">&#125;</span><br><span class="line">Wg.wait()</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p><code>问题描述</code>：假设在2个节点上运行20个map任务，你会发现，20个任务完成了，但是卡住了。<br>&emsp;&emsp;经过print大法，你发现原来是最后两个goroutine卡住了，为什么呢？<br>&emsp;&emsp;经过仔细思考，你发现原来是因为最后两个节点上分别各运行着一个goroutine，而这两个goroutine里都有一个管道阻塞了。<br>&emsp;&emsp;这时候问题就出来了。当你执行到最后两个任务时，主程序早已经结束了for循环，但是goroutine里被管道阻塞了，而管道的另一头却在for循环里。<br>&emsp;&emsp;也就是说，此时管道只有进，没有出，当然卡住了。</p>
+<p><code>解决方法</code>：在主程序拿一个数组保存chan的值，但是这时候问题又来了，你怎么知道最后一共有多少个goroutine阻塞？而且这样只不过是从管道发送阻塞变成管道接收阻塞而已。<br>&emsp;&emsp;念头一转，你觉得直接chan.close()也许可行？可惜也不可以，同样的，我们也不知道goroutine什么时候结束，管道关早了同样会阻塞。<br>&emsp;&emsp;这时候我们重新梳理下我们的需求：<br>&emsp;&emsp;我们希望goroutine里的管道不会阻塞当前的goroutine，并且管道的值可能以后还会用到，最好在后续接收前是阻塞的，等待有需要的代码提取管道里的值，而不是单纯的丢弃。<br>&emsp;&emsp;没错，你灵光一闪！发现再开一个goroutine不就好了吗。<br>&emsp;&emsp;Go func(){chan &lt;- good}()，完美解决问题。  </p>
+<p><code>事后总结</code>：这个开goroutine防止阻塞的方法还是我在看master.go里学到的，多看看人家的代码还是有好处的。以后遇到可能会阻塞的东西，特别是包含管道这种说不清道不明的东西，还是另开一个goroutine吧。<br>&emsp;&emsp;Part3&amp;4第二种方法在思维上实在比第一种方法要好太多。第一种方法其实是没有理清程序的功能。我们再来回顾一下这段代码，这段代码有两个功能，第一分发任务，第二完成任务。由于完成任务是单独开一个goroutine完成的，所以主程序实际上只有一个功能，那就是分发任务，至于任务如何完成？是否成功完成？任务失败如何处理？这些都应该是属于处理任务的goroutine的功能，而不应该放在主程序里。第二种方法实际上将这段代码进一步抽象成分发任务和处理任务两个模块，并且明确了每个模块的功能，保证每个模块能完成应尽的任务，而绝不跨模块完成不属于自己功能，层次分明，五星好评。这种分解问题，划分模块，明确功能的思维以后要好好训练一下才行。  </p>
+<h1 id="part5-统计一个单词出现在多少个文件里"><a href="#part5-统计一个单词出现在多少个文件里" class="headerlink" title="part5-统计一个单词出现在多少个文件里"></a>part5-统计一个单词出现在多少个文件里</h1><p>也没什么好说的。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">inArray</span><span class="params">(arr []mapreduce.KeyValue, ele <span class="keyword">string</span>)</span><span class="title">bool</span></span>&#123;</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(arr) == <span class="number">0</span>&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span> _, word := <span class="keyword">range</span> arr&#123;</span><br><span class="line">		<span class="keyword">if</span> word.Key == ele&#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// The mapping function is called once for each piece of the input.</span></span><br><span class="line"><span class="comment">// In this framework, the key is the name of the file that is being processed,</span></span><br><span class="line"><span class="comment">// and the value is the file's contents. The return value should be a slice of</span></span><br><span class="line"><span class="comment">// key/value pairs, each represented by a mapreduce.KeyValue.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">mapF</span><span class="params">(document <span class="keyword">string</span>, value <span class="keyword">string</span>)</span> <span class="params">(res []mapreduce.KeyValue)</span></span> &#123;</span><br><span class="line">	<span class="comment">// Your code here (Part V).</span></span><br><span class="line">	f := <span class="function"><span class="keyword">func</span><span class="params">(r <span class="keyword">rune</span>)</span><span class="title">bool</span></span>&#123;</span><br><span class="line">		<span class="keyword">return</span> !unicode.IsLetter(r) &amp;&amp; !unicode.IsNumber(r)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//https://golang.org/pkg/strings/#FieldsFunc</span></span><br><span class="line">	<span class="comment">//将满足string中满足f的去掉，并且以满足f的作为两个word之间的分割线</span></span><br><span class="line">	words := strings.FieldsFunc(value, f)</span><br><span class="line">	<span class="keyword">for</span> _, word := <span class="keyword">range</span> words&#123;</span><br><span class="line">		<span class="keyword">if</span> !inArray(res, word)&#123;</span><br><span class="line">			res = <span class="built_in">append</span>(res, mapreduce.KeyValue&#123;word, document&#125;)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// The reduce function is called once for each key generated by Map, with a</span></span><br><span class="line"><span class="comment">// list of that key's string value (merged across all inputs). The return value</span></span><br><span class="line"><span class="comment">// should be a single output value for that key.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">reduceF</span><span class="params">(key <span class="keyword">string</span>, values []<span class="keyword">string</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="comment">// Your code here (Part V).</span></span><br><span class="line">	sort.Strings(values)</span><br><span class="line">	res := strconv.Itoa(<span class="built_in">len</span>(values))+<span class="string">" "</span>+values[<span class="number">0</span>]</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">1</span>; i &lt; <span class="built_in">len</span>(values); i++&#123;</span><br><span class="line">		res = res + <span class="string">","</span> + values[i]</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> res</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+	<div>
+	
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+	
+	</div>
+
+	<div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/2019/05/19/MIT6-824-lab1-MapReduce/">MIT6.824-lab1-MapReduce</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问 Sworduo 的个人博客">Sworduo</a></p>
+  <p><span>发布时间:</span>2019年05月19日 - 00:05</p>
+  <p><span>最后更新:</span>2019年06月22日 - 19:06</p>
+  <p><span>原始链接:</span><a href="/2019/05/19/MIT6-824-lab1-MapReduce/" title="MIT6.824-lab1-MapReduce">http://sworduo.net/2019/05/19/MIT6-824-lab1-MapReduce/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://sworduo.net/2019/05/19/MIT6-824-lab1-MapReduce/" aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+    });
+    });  
+</script>
+
+      
+	</div>
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>快到碗里来！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.png" alt="Sworduo 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+	
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/分布式/" rel="tag"># 分布式</a>
+          
+            <a href="/tags/MIT6-824/" rel="tag"># MIT6.824</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/15/CSAPP-lab2/" rel="next" title="CSAPP-lab2-BOMB">
+                <i class="fa fa-chevron-left"></i> CSAPP-lab2-BOMB
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/21/MIT6-824-LEC3-GFS/" rel="prev" title="MIT6.824-LEC3-GFS">
+                MIT6.824-LEC3-GFS <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+	 
+		<h3> 相关文章：</h3><ul class="related-posts"><li><a href="/2019/05/22/MIT6-824-LEC04-VMWARE-ft/">MIT6.824-LEC04-VMWARE-ft</a></li><li><a href="/2019/06/21/MIT6-824-lab3-kvservice/">MIT6-824-lab3-kvservice</a></li><li><a href="/2019/06/04/MIT6-824-lab2-raft/">MIT6.824-lab2-raft</a></li><li><a href="/2019/05/21/MIT6-824-LEC3-GFS/">MIT6.824-LEC3-GFS</a></li><li><a href="/2019/03/10/MapReduce/">MapReduce</a></li><li><a href="/2019/05/29/MIT6-824-LEC05-Raft/">MIT6.824-LEC05-Raft</a></li><li><a href="/2019/03/06/chapter0/">分布式入门篇（零）</a></li><li><a href="/2019/03/06/chapter2/">分布式入门篇（二）</a></li><li><a href="/2019/03/06/chapter4/">分布式入门篇（四）</a></li><li><a href="/2019/03/06/chapter1/">分布式入门篇（一）</a></li></ul> 
+	
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/horse.jpg" alt="Sworduo">
+            
+              <p class="site-author-name" itemprop="name">Sworduo</p>
+              <p class="site-description motion-element" itemprop="description">千里之行，始于足下</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/sworduo" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:sworduo@163.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+		  
+		
+			<div class="links-of-blogroll motion-element links-of-blogroll-block">
+			  <div class="links-of-blogroll-title">
+				<!-- modify icon to fire by szw -->
+				<i class="fa fa-history fa-" aria-hidden="true"></i>
+				近期文章
+			  </div>
+			  <ul class="links-of-blogroll-list">
+				
+				
+				  <li>
+					<a href="/2019/06/21/MIT6-824-lab3-kvservice/" title="MIT6-824-lab3-kvservice" target="_blank">MIT6-824-lab3-kvservice</a>
+				  </li>
+				
+				  <li>
+					<a href="/2019/06/04/MIT6-824-lab2-raft/" title="MIT6.824-lab2-raft" target="_blank">MIT6.824-lab2-raft</a>
+				  </li>
+				
+				  <li>
+					<a href="/2019/05/29/MIT6-824-LEC05-Raft/" title="MIT6.824-LEC05-Raft" target="_blank">MIT6.824-LEC05-Raft</a>
+				  </li>
+				
+				  <li>
+					<a href="/2019/05/22/CSAPP-lab3-Attack/" title="CSAPP-lab3-Attack" target="_blank">CSAPP-lab3-Attack</a>
+				  </li>
+				
+				  <li>
+					<a href="/2019/05/22/MIT6-824-LEC04-VMWARE-ft/" title="MIT6.824-LEC04-VMWARE-ft" target="_blank">MIT6.824-LEC04-VMWARE-ft</a>
+				  </li>
+				
+			  </ul>
+			</div>
+		
+		
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#预备知识"><span class="nav-number">1.</span> <span class="nav-text">预备知识</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Part1-实现map和reduce节点的核心代码"><span class="nav-number">2.</span> <span class="nav-text">Part1-实现map和reduce节点的核心代码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Part2-实现简单的字频统计"><span class="nav-number">3.</span> <span class="nav-text">Part2-实现简单的字频统计</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Part3-amp-4分布式容错执行mapreduce"><span class="nav-number">4.</span> <span class="nav-text">Part3&amp;4分布式容错执行mapreduce</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#相关背景"><span class="nav-number">4.1.</span> <span class="nav-text">相关背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#认识问题"><span class="nav-number">4.2.</span> <span class="nav-text">认识问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#了解程序"><span class="nav-number">4.3.</span> <span class="nav-text">了解程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题分析"><span class="nav-number">4.4.</span> <span class="nav-text">问题分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#程序思路"><span class="nav-number">4.5.</span> <span class="nav-text">程序思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#坑"><span class="nav-number">4.6.</span> <span class="nav-text">坑</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#part5-统计一个单词出现在多少个文件里"><span class="nav-number">5.</span> <span class="nav-text">part5-统计一个单词出现在多少个文件里</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart" aria-hidden="true"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sworduo</span>
+
+<!--
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">83.4k</span>
+  
+-->
+</div>
+
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共83.4k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: true,
+        notify: true,
+        appId: 'Ja6j11Iyo36Mmrc5INxiYSIx-gzGzoHsz',
+        appKey: 'v6xwUOCxJcVCwOdrB7ufT9gO',
+        placeholder: 'Come on bro',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Ja6j11Iyo36Mmrc5INxiYSIx-gzGzoHsz", "v6xwUOCxJcVCwOdrB7ufT9gO");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  <!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/love.js"></script>
+<!-- 背景动画 -->
+<script type="text/javascript" src="/js/src/particle.js"></script>
+
+</body>
+</html>
