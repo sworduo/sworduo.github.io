@@ -819,7 +819,8 @@ func (rf *Raft) InstallSnapshot(args *InstallSnapshotArgs, reply *InstallSnapsho
 
 ##	结果
 &emsp;&emsp;不知道为什么，我的时间比官方要求多得多。。其他实验都好好的，真是奇怪。而且官方截图，2000多条指令花了0.4s，我这里3909条指令花了80s，也不知道是为什么。  
-&emsp;&emsp;另外，最后一个测试偶尔会出现死锁，测试了大概30次出现一次，但是重现环境有点麻烦，就没管了。
+&emsp;&emsp;另外，最后一个测试偶尔会出现死锁，测试了大概30次出现一次，但是重现环境有点麻烦，就没管了。  
+&emsp;&emsp;还有一点，最后一个测试偶尔会报“日志没有修剪”的错误，和上面提到的原因一样，底层raft一次性提交了过多的日志，使得kvservice来不及快照，程序就结束了。这个我也没什么好办法解决，就酱吧。  
 ```go
 	Test: InstallSnapshot RPC (3B) ...
 	  ... Passed --   8.9  3  1948   63
