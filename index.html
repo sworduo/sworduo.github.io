@@ -301,6 +301,227 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://sworduo.net/2019/06/27/CSAPP-lab5-Cache/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sworduo">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/horse.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sworduo's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/27/CSAPP-lab5-Cache/" itemprop="url">CSAPP-lab5-Cache</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-27T00:00:56+08:00">
+                2019-06-27
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于&#58;</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2019-06-27T00:12:56+08:00">
+                2019-06-27
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/c语言/" itemprop="url" rel="index">
+                    <span itemprop="name">c语言</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/06/27/CSAPP-lab5-Cache/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/27/CSAPP-lab5-Cache/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/06/27/CSAPP-lab5-Cache/" class="leancloud_visitors" data-flag-title="CSAPP-lab5-Cache">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  6.5k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  30 min
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <img src="/2019/06/27/CSAPP-lab5-Cache/head.jpg">
+<p>&emsp;&emsp;本实验是CSAPP第三版配套实验中的第五个实验，对应书本第六章《存储器层次结构》，准确来说，是其中有关于缓存部分的知识。本实验共分为两部分：第一部分要求实验一个简易的缓存架构，接收一系列指令，模拟指令hit和miss的过程，如果指令miss，需要根据LRU策略来替换缓存项；第二部分是编写缓存友好的矩阵转置算法，要求矩阵转置尽可能多的hit缓存，减少内存访问的次数，这一部分很有意思，一共只测试3个矩阵，题目暗示可以针对每个矩阵做特别的优化。完成这一实验可以加深对缓存的认识，以及理解为什么同样是计算一个矩阵转置/乘积，有些算法就是比其他算法快，或者说，可以体会到矩阵加速运算的精髓所在。这里是我的完整<a href="https://github.com/sworduo/CSAPP/tree/master/labs/lab5-cache" target="_blank" rel="noopener">实现</a>。<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/06/27/CSAPP-lab5-Cache/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </p></div>
+    
+    
+    
+
+	<div>
+	
+	</div>
+
+	<div>
+      
+	</div>
+
+    
+
+    
+
+    
+	
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+	
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://sworduo.net/2019/06/21/MIT6-824-lab3-kvservice/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2359,232 +2580,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://sworduo.net/2019/03/07/CSAPP-lab1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Sworduo">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/horse.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sworduo's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/07/CSAPP-lab1/" itemprop="url">CSAPP-lab1-DATALAB</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-07T13:17:51+08:00">
-                2019-03-07
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于&#58;</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2019-06-22T19:58:11+08:00">
-                2019-06-22
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/c语言/" itemprop="url" rel="index">
-                    <span itemprop="name">c语言</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/03/07/CSAPP-lab1/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/07/CSAPP-lab1/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/03/07/CSAPP-lab1/" class="leancloud_visitors" data-flag-title="CSAPP-lab1-DATALAB">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2.2k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  10 min
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <img src="/2019/03/07/CSAPP-lab1/head.jpg">
-<p>本次实验主要是考察书本第二章的内容，要求掌握数字信息在计算机中的存储方式以及相关运算，比如数字的补码表示，补码运算；浮点数的表示和计算等，需要了解计算机是如何去“认识”一个数字。事实上题目本身不难，但是可用的运算操作符和最大的操作符数量有限制，这就使得题目难度陡升，需要仔细思考，纠结很久才能写完一题，这是因为本人对位运算不怎么熟悉。下面具体分析一下每一道题。<br>(ps:<a href="https://skylark-workshop.xyz/blog/csapp-datalab-new/" target="_blank" rel="noopener">这里</a>有一个解释写的比较好的网站，位运算有时候就是想不出来，郁闷。)<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/03/07/CSAPP-lab1/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </p></div>
-    
-    
-    
-
-	<div>
-	
-	</div>
-
-	<div>
-      
-	</div>
-
-    
-
-    
-
-    
-	
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-	
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2632,7 +2632,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-count">21</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2699,6 +2699,10 @@
 				
 				
 				  <li>
+					<a href="/2019/06/27/CSAPP-lab5-Cache/" title="CSAPP-lab5-Cache" target="_blank">CSAPP-lab5-Cache</a>
+				  </li>
+				
+				  <li>
 					<a href="/2019/06/21/MIT6-824-lab3-kvservice/" title="MIT6-824-lab3-kvservice" target="_blank">MIT6-824-lab3-kvservice</a>
 				  </li>
 				
@@ -2712,10 +2716,6 @@
 				
 				  <li>
 					<a href="/2019/05/22/CSAPP-lab3-Attack/" title="CSAPP-lab3-Attack" target="_blank">CSAPP-lab3-Attack</a>
-				  </li>
-				
-				  <li>
-					<a href="/2019/05/22/MIT6-824-LEC04-VMWARE-ft/" title="MIT6.824-LEC04-VMWARE-ft" target="_blank">MIT6.824-LEC04-VMWARE-ft</a>
 				  </li>
 				
 			  </ul>
@@ -2757,7 +2757,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">83.4k</span>
+    <span title="Site words total count">89.9k</span>
   
 -->
 </div>
@@ -2780,7 +2780,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共83.4k字</span>
+  <span class="post-count">博客全站共89.9k字</span>
 </div>
 
         
